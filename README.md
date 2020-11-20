@@ -1,8 +1,9 @@
 # e_paper_dashboard
 E-ink display using Raspberry Pi to display realtime weather, transit information, calendar and soon more
 
-![E_paper_1](https://github.com/duxenmx/e_paper_dashboard/blob/main/pic/e_paper_1.png?raw=true)
-![E_paper_2](https://github.com/duxenmx/e_paper_dashboard/blob/main/pic/e_paper_2.png?raw=true)
+![E_paper_1](pic/e_paper_1.png)
+![E_paper_2](pic/e_paper_2.png)
+![E_paper_3](pic/e_paper_3.png)
 
 
 **SETUP**
