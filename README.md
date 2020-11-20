@@ -7,17 +7,9 @@ E-ink display using Raspberry Pi to display realtime weather, transit informatio
 
 **SETUP**
 
-1.Get your weather API Key from here https://home.openweathermap.org/users/sign_up.
+I created a wiki for you to set up the project, please follow it and let me know if you have any issues
 
-2.Get your Transit API key from your local transit system, in my case I live in Vancouver, BC so my url would be https://developer.translink.ca/ServicesRtti, you will need to adjust significantly the dashboard_transit.py module to your local transit API, please be aware of that
-
-3.Get your stop numbers, the program can do up to 4 stops showing 2 estimates per stop in the current space I provide it, for me I got the 5 digit codes from the transit app
-
-4.Get your **longitude** and **lattitude** using I used https://www.latlong.net
-
-5.**OPTIONAL STEP** I created a PM2 process so it can start on reboot and I wouldnt have to be meddling with it to start, if you want to do it as well take a look on the PM2 documentation
-
--run dashboard.py to start it
+-run python3 dashboard.py to start it
 
 **Note**
 
@@ -34,17 +26,6 @@ E-ink display using Raspberry Pi to display realtime weather, transit informatio
 -Have fun with it and do something awesome!
 
 
-**Parts**
-
--https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT
-
--Raspberry Pi zero W
-
--SD card for the Pi at least 8 GB.
-
--Power supply for the Pi.
-
--5x7 in frame
 
 **Credit**
 
