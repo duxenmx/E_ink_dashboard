@@ -1,0 +1,57 @@
+{
+    "Transit":{
+        "T_URL":"http://api.translink.ca/RTTIAPI/V1/stops/",
+        "T_API_KEY":"",
+        "Stops":["12345"],
+        "T_BUS":"3",
+        "T_BUS_TIME":"10"
+    },
+    "Weather":{
+        "W_URL":"https://api.openweathermap.org/data/2.5/onecall?",
+        "W_API_KEY":"",
+        "UNITS":"metric"
+    },
+    "Currency":{
+        "C_URL_1":"https://free.currconv.com",
+        "C_API_KEY_1":"",
+        "C_URL_3":"https://api.coindesk.com/v1/bpi/currentprice/",
+        "C_URL_4" : "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=",
+        "CURR_CHECK": ["USD"]
+    },
+    "Stocks":{
+        "STOCK_API":"",
+        "STOCK_W_URL":"https://api.polygon.io/v1/open-close/",
+        "STOCK_WE_URL" :"https://api.polygon.io/v2/aggs/ticker/",
+        "STOCK_CHECK": ["BABA"]
+    },
+    "Geolocation":{
+        "G_URL":"https://api.ipdata.co/",
+        "G_API_KEY":""
+    },
+    "Tasklist":{
+        "gsheet_json":"gsheet_keys.json",
+        "sheetname":"Messageboard"
+    },
+    "G_Meetings":{
+        "CREDENTIALS_FILE":"credentials.json"
+    },
+    "Movies":{
+        "MOVIE_API":"",
+        "MOVIE_URL":"https://api.themoviedb.org/3/"
+    },
+    "News":{
+        "NEWS_API":"",
+        "NEWS_URL":"https://newsapi.org/v2/top-headlines?",
+        "NEWS_SOURCES" : "bbc-news,cnn,cbc-news"
+    },
+    "System":{
+        "waking_time":"6",
+        "sleeping_time":"23",
+        "refresh_time":"5",
+        "mod_1_choice":"random",
+        "mod_2_choice":"random",
+        "mod_3_choice":"random",
+        "mod_4_choice":"calendar",
+        "awake":"false"
+    }
+}
