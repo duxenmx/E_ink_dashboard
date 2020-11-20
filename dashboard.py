@@ -1,167 +1,233 @@
 
 
 from waveshare_epd import epd7in5_V2
-from io import BytesIO
 import json
-import traceback
-from PIL import Image, ImageDraw, ImageFont
+# import traceback
+from PIL import Image, ImageDraw
 from datetime import datetime
-import calendar
-import d_functions
-import dashboard_transit
-import dashboard_weather
+import time
+from modules import d_functions as d_f
+from modules import db_transit as d_t
+from modules import db_tasklist as d_tl
+from modules import db_g_meetings as d_gm
+from modules import db_weather as d_w
+from modules import db_news as d_n
+from modules import db_curr_stock as d_cs
+from modules import db_geolocation as d_geo
 import os
-import sys
+
 
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
-icondir = os.path.join(picdir, 'icon')
-fontdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'font')
-
-# libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
-# if os.path.exists(libdir):
-#    sys.path.append(libdir)
-# sys.path.append('lib')
+creddir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials')
 
 epd = epd7in5_V2.EPD()
-
-
-# Set the fonts
-font20 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 20)
-font22 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 22)
-font26 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 26)
-font30 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 30)
-font35 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 35)
-font45 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 45)
-font50 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 50)
 
 # Set the colors
 black = 'rgb(0,0,0)'
 white = 'rgb(255,255,255)'
-grey = 'rgb(235,235,235)'
-
 
 # Initialize and clear screen
 print('Initializing and clearing screen.')
 epd.init()
 epd.Clear()
 
+geo_data = []
+check_awake = 0
+mod_1_turn = 1
+mod_2_turn = 1
+mod_3_turn = 1
+mod_4_turn = 1
+news_load = 0
+cs_load = 0
+geo_load = 0
+saved_hour = int(datetime.now().strftime('%H'))
+news_0 = []
+news_1 = []
+stock_it = []
+curr_ex = []
 
-W_API_KEY = 'YOUR WEATHER API KEY'
-T_API_KEY = 'YOUR TRANSLINK API KEY'
-T_STOP_1 = 'STOP NO 1'
-T_STOP_2 = 'STOP NO 2'
-T_STOP_3 = 'STOP NO 3'
-T_STOP_4 = 'STOP NO 4'
-T_BUS = '2' #HOW MANY ESTIMATES WILL LOOK PER STOP
-T_BUS_TIME = '600' #TIME TO LOOK BETWEEN ESTIMATES, 600 IS 10 HOURS 
-LOCATION = 'YOUR LOCATION' #not using this for the moment, so you can leave it empty
-LATITUDE = 'YOUR LATITUDE'
-LONGITUDE = 'YOUR LONGITUDE'
-UNITS = 'metric'#can be metric or imperial
-
-
-WEATHER_URL = 'http://api.openweathermap.org/data/2.5/onecall?'
-TRANSLINK_URL = 'http://api.translink.ca/RTTIAPI/V1/stops/'
-
-bus_stop = []
-w_info = []
-t_stop_no = [T_STOP_1, T_STOP_2, T_STOP_3, T_STOP_4]
 
 while True:
-    s_x = 50
-    s_x_inc = 25
-    t_s_size = font22
 
-    # API CALLS
-    for x_stop in (t_stop_no):
-        bus_stop.append(dashboard_transit.get_transit(
-            TRANSLINK_URL, x_stop, T_API_KEY, T_BUS, T_BUS_TIME))
+    with open(os.path.join(creddir, 'dash_id.json'), "r") as rdash_id:
+        data = json.load(rdash_id)
+    # Getting time information to know when its supposed to be active
+    awake = data["System"]["awake"].lower()  # for testing mode to activate within sleeping hours
+    refresh_sec = int(data["System"]["refresh_time"])  # time in seconds
+    waking_time = int(data["System"]["waking_time"])  # time in hours, 24h mode
+    sleep_time = int(data["System"]["sleeping_time"])  # time in hours, 24h mode
+    mod_1_choice = str(data["System"]["mod_1_choice"]).lower()
+    mod_2_choice = str(data["System"]["mod_2_choice"]).lower()
+    mod_3_choice = str(data["System"]["mod_3_choice"]).lower()
+    mod_4_choice = str(data["System"]["mod_4_choice"]).lower()
+    if d_f.time_in_range(waking_time, sleep_time) or awake == "true":
+        check_awake = 0
+        current_time = datetime.now().strftime('%I:%M%p')
+        current_hour = int(datetime.now().strftime('%H'))
+        # Open template file
+        template = Image.open(os.path.join(picdir, 'template.png'))
+        # Initialize the drawing context with template as background
+        draw = ImageDraw.Draw(template)
 
-    w_info = (dashboard_weather.get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY))
+        # populating the ids from the json file
+        if geo_load == 0:
+            geo_data.clear()
+            geo_data = d_geo.get_geo(str(data["Geolocation"]["G_URL"]), str(
+                data["Geolocation"]["G_API_KEY"]), black)
+            geo_load = 1
 
-    # Open template file
-    template = Image.open(os.path.join(picdir, 'template.png'))
-    # Initialize the drawing context with template as background
-    draw = ImageDraw.Draw(template)
+        W_API_KEY = str(data["Weather"]["W_API_KEY"])
+        T_API_KEY = str(data["Transit"]["T_API_KEY"])
+        t_stop_no = data["Transit"]["Stops"]
+        T_BUS = str(data["Transit"]["T_BUS"])
+        T_BUS_TIME = str(int(data["Transit"]["T_BUS_TIME"])*60)
 
-    # POPULATING TRANSIT
-    draw.text((8, 10), 'TRANSIT', font=font30, fill=black)
-    for x in range(len(bus_stop)):
-        for y in (0, 1):
-            if bus_stop[x][y] != "":
-                draw.text((8, s_x), bus_stop[x][y], font=t_s_size, fill=black)
-                # print(bus_stop[x][y])
-                s_x = s_x+s_x_inc
+        LOCATION = str(geo_data[0]) + ", " + str(geo_data[1])
+        LATITUDE = str(geo_data[3])
+        LONGITUDE = str(geo_data[4])
+        LOCAL_CUR = str(geo_data[5])
+        UNITS = str(data["Weather"]["UNITS"])
+        WEATHER_URL = str(data["Weather"]["W_URL"])
+        TRANSLINK_URL = str(data["Transit"]["T_URL"])
 
-   # POPULATING WEATHER
-    draw.text((440, 10), w_info[0], font=font30, fill=black)
-    draw.text((510, 55), w_info[1], font=font45, fill=black)
-    draw.text((610, 55), w_info[3], font=font22, fill=black)
-    draw.text((610, 80), w_info[2], font=font22, fill=black)
-    draw.text((515, 130), w_info[10], font=font22, fill=black)
-    draw.text((515, 155), w_info[11] + ' ' + w_info[13], font=font22, fill=black)
-    draw.text((515, 190), w_info[14], font=font22, fill=black)
-    draw.text((515, 215), w_info[15] + ' ' + w_info[17], font=font22, fill=black)
+        gsheetjson = str(data["Tasklist"]["gsheet_json"])
+        sheetname = str(data["Tasklist"]["sheetname"])
+        meet_creds = str(data["G_Meetings"]["CREDENTIALS_FILE"])
 
-    icon_file = str(w_info[4]) + '.png'
-    icon_image = Image.open(os.path.join(icondir, icon_file))
-    template.paste(icon_image, (440, 45))
+        NEWS_URL = str(data["News"]["NEWS_URL"])
+        NEWS_API = str(data["News"]["NEWS_API"])
+        NEWS_SOURCES = str(data["News"]["NEWS_SOURCES"])
+        NEWS_COUNTRY = str(geo_data[7])
 
-    icon_file = str(w_info[12]) + '.png'
-    icon_image = Image.open(os.path.join(icondir, icon_file))
-    template.paste(icon_image, (440, 120))
+        C_1_URL = str(data["Currency"]["C_URL_1"])
+        C_3_URL = str(data["Currency"]["C_URL_3"])
+        C_4_URL = str(data["Currency"]["C_URL_4"])
+        C_1_API = str(data["Currency"]["C_API_KEY_1"])
+        CURR_CHECK = data["Currency"]["CURR_CHECK"]
 
-    icon_file = str(w_info[16]) + '.png'
-    icon_image = Image.open(os.path.join(icondir, icon_file))
-    template.paste(icon_image, (440, 180))
+        ST_W_URL = str(data["Stocks"]["STOCK_W_URL"])
+        ST_WE_URL = str(data["Stocks"]["STOCK_WE_URL"])
+        ST_API = str(data["Stocks"]["STOCK_API"])
+        ST_C = data["Stocks"]["STOCK_CHECK"]
 
-   # POPULATING CALENDAR
-    cal_month = datetime.now().month
-    cal_year = datetime.now().year
-    cal_day = datetime.now().day
-    cal_n_m = calendar.month_name[cal_month]
-    cal_text = calendar.TextCalendar(calendar.SUNDAY)
-    cal_list = cal_text.monthdayscalendar(cal_year, cal_month)
-    cal_s_x = 440
-    cal_s_y = 325
+        mod_1_turn = d_f.choose_mod(mod_1_choice, mod_1_turn)
+        mod_2_turn = d_f.choose_mod(mod_2_choice, mod_2_turn)
+        mod_3_turn = d_f.choose_mod(mod_3_choice, mod_3_turn)
 
-    draw.text((500, 260), str(cal_n_m) + ' ' + str(cal_year), font=font35, fill=black)
-    draw.text((440, 300), 'SU    MO    TU   WED  THU   FRI   SAT', font=font22, fill=black)
+        if saved_hour != current_hour:
+            news_load = 0
+            cs_load = 0
+            saved_hour = current_hour
+            news_1.clear()
+            news_0.clear()
+            stock_it.clear()
+            curr_ex.clear()
 
-    for cal_x in (0, 1, 2, 3, 4):
-        for cal_y in (0, 1, 2, 3, 4, 5, 6):
-            if cal_list[cal_x][cal_y] != 0:
-                if cal_list[cal_x][cal_y] == cal_day:
-                    draw.rectangle((cal_s_x, cal_s_y, cal_s_x+22, cal_s_y+22), fill=black)
-                    draw.text((cal_s_x, cal_s_y), str(
-                        cal_list[cal_x][cal_y]), font=font22, fill=white, align='right')
-                else:
-                    draw.text((cal_s_x, cal_s_y), str(
-                        cal_list[cal_x][cal_y]), font=font22, fill=black, align='right')
-            cal_s_x = cal_s_x + 55
-        cal_s_x = 440
-        cal_s_y = cal_s_y + 30
+        # TRANSIT  CALLS or news calls
+        if mod_1_turn == 0:
+            mod_t_s_x = 8
+            mod_t_s_y = 50
 
-    # DRAWING BOUNDARIES
-    draw.line((425, 0, 425, 500), fill=0, width=2)
-    draw.line((0, 260, 900, 260), fill=0, width=2)
+            print('Transit loaded')
 
-    '''
+            d_t.run_transit_mod(TRANSLINK_URL, t_stop_no, T_API_KEY, T_BUS,
+                                T_BUS_TIME,  LOCATION,  mod_t_s_x, mod_t_s_y, draw, black)
+        elif mod_1_turn == 1:
+            # news calls
+            mod_t_s_x = 10
+            mod_t_s_y = 10
 
-	# Draw bottom right box
-	draw.text((627, 330), 'UPDATED', font=font35, fill=white)
-	current_time = datetime.now().strftime('%I:%M')
-	draw.text((627, 375), current_time, font=font60, fill=white)
+            if news_load == 0:
+                #print("news by country")
+                news_0 = d_n.get_news(NEWS_URL, NEWS_API, NEWS_SOURCES, NEWS_COUNTRY, 0, black)
+                #print("news by source")
+                news_1 = d_n.get_news(NEWS_URL, NEWS_API, NEWS_SOURCES, NEWS_COUNTRY, 1, black)
+                news_load = 1
+                print("news charged at " + str(saved_hour))
 
-	'''
+            print('News loaded')
 
-    # Save the image for display as PNG
-    screen_output_file = os.path.join(picdir, 'screen_output.png')
-    template.save(screen_output_file)
-    # Close the template file
-    template.close()
+            if (d_f.tir_min(int(current_hour), 0, 15, 59) or d_f.tir_min(int(current_hour), 30, 45, 59)) and news_load == 1:
+                d_n.draw_news_mod(mod_t_s_x, mod_t_s_y, news_0, black, draw)
+            elif (d_f.tir_min(int(current_hour), 15, 30, 59) or d_f.tir_min(int(current_hour), 45, 59, 59)) and news_load == 1:
+                d_n.draw_news_mod(mod_t_s_x, mod_t_s_y, news_1, black, draw)
+        elif mod_1_turn == 2:
+            print("Module 1 is off")
 
-    # Write to screen, refresh in 300 seconds / 5 min
-    d_functions.write_to_screen(screen_output_file, 300)
-    bus_stop.clear()
-    w_info.clear()
+        # Weather or currency-stock
+        if mod_2_turn == 0:
+
+            mod_w_s_x = 440
+            mod_w_s_y = 10
+            print('Weather loaded')
+            d_w.run_weather_mod(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY,
+                                mod_w_s_x, mod_w_s_y,  picdir, template, draw, black)
+        elif mod_2_turn == 1:
+            mod_w_s_x = 440
+            mod_w_s_y = 10
+
+            if cs_load == 0:
+                curr_ex, stock_it = d_cs.run_st_cur_info(
+                    C_1_URL, C_3_URL, C_4_URL, LOCAL_CUR, CURR_CHECK,  C_1_API, ST_WE_URL, ST_W_URL, ST_API, ST_C, black)
+                cs_load = 1
+                print("C-S charged at " + str(saved_hour))
+
+            print('C-S loaded')
+
+            if d_f.tir_min(int(current_hour), 0, 59, 59) and cs_load == 1:
+                d_cs.draw_cs_mod(mod_w_s_x, mod_w_s_y, draw, curr_ex, stock_it, LOCAL_CUR, black)
+        elif mod_2_turn == 2:
+            print("Module 2 is off")
+
+        # populate Tasklist or meetings
+        if mod_3_turn == 0:
+            mod_tl_s_x = 10
+            mod_tl_s_y = 265
+            d_tl.run_tasklist_mod(gsheetjson, sheetname, creddir,
+                                  mod_tl_s_x, mod_tl_s_y, draw, black)
+            print('Tasklist loaded')
+            draw.rectangle((8, 450, 175, 475), fill=black)
+            draw.text((8, 450), 'UPDATED: ' + str(current_time), font=d_f.font_size(20), fill=white)
+        elif mod_3_turn == 1:
+            mod_tl_s_x = 10
+            mod_tl_s_y = 265
+            d_gm.run_meeting_mod(meet_creds, creddir, mod_tl_s_x, mod_tl_s_y, draw, black)
+            print('Meetings loaded')
+            draw.rectangle((250, 260, 430, 285), fill=black)
+            draw.text((255, 260), 'UPDATED: ' + str(current_time),
+                      font=d_f.font_size(20), fill=white)
+        elif mod_3_turn == 2:
+            print("Module 3 is off")
+
+        # Populate the calendar module
+        mod_c_s_x = 440
+        mod_c_s_y = 325
+        d_f.draw_cal_mod(mod_c_s_x, mod_c_s_y, draw, black, white)
+
+        # DRAWING BOUNDARIES
+        draw.line((430, 0, 430, 500), fill=0, width=2)
+        draw.line((0, 260, 900, 260), fill=0, width=2)
+
+        # Draw bottom left box
+
+        # Save the image for display as PNG
+        screen_output_file = os.path.join(picdir, 'screen_output.png')
+        template.save(screen_output_file)
+        # Close the template file
+        template.close()
+
+        # Write to screen next in 300 seconds
+        d_f.write_to_screen(screen_output_file, int(refresh_sec*60))
+
+    # if the device is in sleeping hours it will clean the screen to prevent burn out of the screen
+    else:
+        print('Device Sleeping.')
+        if check_awake == 0:
+            check_awake = 1
+            epd.Clear()
+            print('Sleeping for ' + str(refresh_sec) + ' min.')
+            time.sleep(refresh_sec)
+        else:
+            # use this else to prevent constant screen refreshing once its sleeping, it will just keep sleeping for 5 more minutes, like me every morning....
+            print('Sleeping for ' + str(refresh_sec) + ' min.')
+            time.sleep(refresh_sec)
