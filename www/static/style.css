@@ -1,0 +1,104 @@
+.col_transit {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.col_weather {
+    position: fixed;
+    top: 280px;
+    left: 20px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.col_geo {
+    position: fixed;
+    top: 280px;
+    left: 1300px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.col_curr {
+    position: fixed;
+    top: 460px;
+    left: 20px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.col_stock {
+    position: fixed;
+    top: 460px;
+    left: 800px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.col_tasklist {
+    position: fixed;
+    top: 100px;
+    left: 920px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.col_meetings {
+    position: fixed;
+    top: 100px;
+    left: 1265px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.col_news {
+    position: fixed;
+    top: 280px;
+    left: 605px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.col_system {
+    position: fixed;
+    top: 460px;
+    left: 1450px;
+    border: 2px solid Black;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+
+}
+.res_msg {
+    position: fixed;
+    display: inline-block;
+    font-size: 35px;
+    padding: 10px 10px;
+    top: 800px;
+    left: 1200px;
+}
+.button_1 {
+    position: fixed;
+    display: inline-block;
+    font-size: 35px;
+    padding: 10px 10px;
+    top: 800px;
+    left: 850px;
+}

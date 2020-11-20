@@ -1,0 +1,131 @@
+
+<!doctype html>
+<html>
+<head>
+<link rel = "stylesheet" href = "/static/style.css" >
+<title>E-Paper Dashboard Settings</title>
+</head>
+<body>
+    <h1>E-Paper Dashboard Settings</h1>
+    <form action = "http://your_ip_address/" method = "post">
+        {{ form.hidden_tag() }}
+        <div class="col_transit">
+            <h1>Transit Info</h1>
+            <p>
+            {{ form.T_URL.label }}{{ form.T_URL(style = "margin-right:20px;",size="32") }}
+            {{ form.T_API_KEY.label }}{{ form.T_API_KEY(style = "margin-right:20px;") }}
+
+            </p>
+            <p>
+            {{ form.Stops.label }}{{ form.Stops(style = "margin-right:20px;",size="25") }}
+            {{ form.T_BUS.label }}{{ form.T_BUS(style = "margin-right:20px;") }}
+            {{ form.T_BUS_TIME.label }}{{ form.T_BUS_TIME(style = "margin-right:20px;") }}
+            </p>
+        </div>
+        <div class = "col_weather" >
+            <h1 > Weather Info </h1>
+            <p>
+            {{ form.W_URL.label }}{{ form.W_URL(style = "margin-right:20px;",size="40") }}
+
+            {{ form.UNITS.label }}{{ form.UNITS }}
+            </p>
+            <p>
+            {{ form.W_API_KEY.label }}{{ form.W_API_KEY(style = "margin-right:20px;",size="30") }}
+            </p>
+        </div>
+        <div class = "col_geo" >
+            <h1 >  Geolocation Info </h1>
+            <p>
+            {{ form.G_URL.label }}{{ form.G_URL(style = "margin-right:20px;") }}
+            </p>
+            <p>
+            {{ form.G_API_KEY.label }}{{ form.G_API_KEY(style = "margin-right:20px;",size="52") }}
+            </p>
+        </div>
+        <div class = "col_curr" >
+            <h1 > Currency Info </h1>
+            <p>
+            {{ form.C_URL_1.label }}{{ form.C_URL_1(style = "margin-right:20px;",size="17") }}
+            {{ form.C_API_KEY_1.label }}{{ form.C_API_KEY_1(style = "margin-right:20px;",size="17") }}
+            </p>
+            <p>
+            {{ form.C_URL_3.label }}{{ form.C_URL_3(style = "margin-right:20px;",size="34") }}
+            </p>
+            <p>
+            {{ form.C_URL_4.label }}{{ form.C_URL_4(style = "margin-right:20px;",size="61") }}
+            </p>
+            <p>
+            {{ form.CURR_CHECK.label }}{{ form.CURR_CHECK(style = "margin-right:20px;") }}
+            </p>
+        </div>
+        <div class = "col_stock" >
+            <h1 > Stock Info </h1>
+            <p>
+            {{ form.STOCK_W_URL.label }}{{ form.STOCK_W_URL(style = "margin-right:20px;",size="27") }}
+            </p>
+            <p>
+            {{ form.STOCK_WE_URL.label }}{{ form.STOCK_WE_URL(style = "margin-right:20px;",size="27") }}
+            </p>
+            <p>
+            {{ form.STOCK_API.label }}{{ form.STOCK_API(style = "margin-right:20px;",size="33") }}
+            </p>
+            <p>
+            {{ form.STOCK_CHECK.label }}{{ form.STOCK_CHECK(style = "margin-right:20px;",size="32") }}
+            </p>
+        </div>
+        <div class = "col_tasklist" >
+            <h1 > TaskList Info </h1>
+            <p>
+            {{ form.gsheet_json.label }}{{ form.gsheet_json(style = "margin-right:20px;") }}
+            </p>
+            <p>
+            {{ form.sheetname.label }}{{ form.sheetname(style = "margin-right:20px;") }}
+            </p>
+        </div>
+        <div class = "col_meetings" >
+            <h1 > Meetings Info </h1>
+            <p>
+            {{ form.CREDENTIALS_FILE.label }}{{ form.CREDENTIALS_FILE(style = "margin-right:20px;") }}
+            </p>
+
+
+        </div>
+        <div class = "col_news" >
+            <h1 > News Info </h1>
+            <p>
+            {{ form.NEWS_URL.label }}{{ form.NEWS_URL(style = "margin-right:20px;",size="28") }}
+            {{ form.NEWS_API.label }}{{ form.NEWS_API(style = "margin-right:20px;",size="28") }}
+            </p>
+            <p>
+            {{ form.NEWS_SOURCES.label }}{{ form.NEWS_SOURCES(style = "margin-right:20px;") }}
+            </p>
+        </div>
+        <div class = "col_system" >
+            <h1 > System </h1>
+            <p>
+            {{ form.waking_time.label }}{{ form.waking_time(style = "margin-right:20px;") }}
+            {{ form.sleeping_time.label }}{{ form.sleeping_time(style = "margin-right:20px;") }}
+            </p>
+            <p>
+            {{ form.mod_1_choice.label }}{{ form.mod_1_choice(style = "margin-right:20px;") }}
+            {{ form.mod_2_choice.label }}{{ form.mod_2_choice(style = "margin-right:20px;") }}
+            </p>
+            <p>
+            {{ form.mod_3_choice.label }}{{ form.mod_3_choice(style = "margin-right:20px;") }}
+            {{ form.mod_4_choice.label }}{{ form.mod_4_choice(style = "margin-right:20px;") }}
+            </p>
+            <p>
+            {{ form.refresh_time.label }}{{ form.refresh_time(style = "margin-right:20px;") }}
+            {{ form.awake.label }}{{ form.awake(style = "margin-right:20px;") }}
+            </p>
+        </div>
+        <input type ="submit" class="button_1" name="btn" value="Submit">
+        <div class = "res_msg" >
+            {{ form.res_msg.label }}
+        </div>
+
+    </form>
+
+
+</body>
+</html>
