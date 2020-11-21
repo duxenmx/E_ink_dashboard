@@ -218,7 +218,7 @@ def run_st_cur_info(C_1_URL, C_3_URL, C_4_URL, LOCAL_CUR, CURR_CHECK, C_1_API,  
         st_base = 1
 
     for x_stock in ST_C:
-        if day_name == "Saturday" or day_name == "Sunday" or day_name == "Monday" or day_name == "Tuesday" or d_f.time_in_range(13, 7):
+        if day_name == "Saturday" or day_name == "Sunday" or d_f.time_in_range(13, 7):
             st_i.append(get_stock_weekend(ST_WE_URL, ST_API, x_stock, st_base, LOCAL_CUR, color))
         else:
             st_i.append(get_stock_week(ST_W_URL, ST_API, x_stock, st_base, LOCAL_CUR, color))
