@@ -52,9 +52,14 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
             temp_max = daily_temp['max']
             temp_min = daily_temp['min']
 
+            if UNITS == "metric":
+                unit = "C"
+            elif UNITS == "imperial":
+                unit = "F"
+
             weather_data = []
             weather_data.append('Today is ' + str(day_name))
-            weather_data.append(str(format(temp_current, '.0f')) + u'\N{DEGREE SIGN}C')
+            weather_data.append(str(format(temp_current, '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
             # weather_data.append('Feels Like: ' + str(feels_like))
             # weather_data.append('Humidity: ' + str(humidity))
             # weather_data.append('Wind Speed: '+str(wind))
@@ -63,7 +68,7 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
             else:
                 weather_data.append(str(report.title()))
             weather_data.append(str(format(temp_max, '.0f')) +
-                                u'\N{DEGREE SIGN}C / ' + str(format(temp_min, '.0f')) + u'\N{DEGREE SIGN}C')
+                                u'\N{DEGREE SIGN}' + str(unit)+' / ' + str(format(temp_min, '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
             # weather_data.append('Probabilty of Precipitation: ' +
             #                    str(daily_precip_percent) + '%')
             weather_data.append(str(icon_code))
@@ -71,7 +76,7 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
             for x in range(0, 5):
                 weather_data.append(str(d_f.get_time(daily[x]['dt'])))
                 weather_data.append(str(format(daily[x]['temp']['max'], '.0f')) +
-                                    u'\N{DEGREE SIGN}C / ' + str(format(daily[x]['temp']['min'], '.0f')) + u'\N{DEGREE SIGN}C')
+                                    u'\N{DEGREE SIGN}' + str(unit)+' / ' + str(format(daily[x]['temp']['min'], '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
                 weather_data.append(daily[x]['weather'][0]['icon'])
                 if daily[x]['weather'][0]['description'] == 'heavy intensity rain':
                     weather_data.append('heavy rain')
