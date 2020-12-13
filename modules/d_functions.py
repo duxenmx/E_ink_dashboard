@@ -166,11 +166,18 @@ def isTimeFormat(input):
 
 
 def sep_datetime(utc_datetime):
-    date_time_x = datetime.datetime.strptime(str(utc_datetime), '%Y-%m-%dT%H:%M:%S%z')
-    # pst_time = time.strftime('%Y-%m-%d %H:%M', pst_time)
-    date_x = str(date_time_x.day) + '/' + str(date_time_x.month) + '/' + str(date_time_x.year)
-    time_x = str(date_time_x.strftime('%I')) + ':' + \
-        str(date_time_x.strftime('%M')) + str(date_time_x.strftime('%p'))
+    if len(str(utc_datetime)) > 10:
+
+        date_time_x = datetime.datetime.strptime(str(utc_datetime), '%Y-%m-%dT%H:%M:%S%z')
+        # pst_time = time.strftime('%Y-%m-%d %H:%M', pst_time)
+        date_x = str(date_time_x.day) + '/' + str(date_time_x.month) + '/' + str(date_time_x.year)
+        time_x = str(date_time_x.strftime('%I')) + ':' + \
+            str(date_time_x.strftime('%M')) + str(date_time_x.strftime('%p'))
+    else:
+        date_time_x = datetime.datetime.strptime(str(utc_datetime), '%Y-%m-%d')
+        # pst_time = time.strftime('%Y-%m-%d %H:%M', pst_time)
+        date_x = str(date_time_x.day) + '/' + str(date_time_x.month) + '/' + str(date_time_x.year)
+        time_x = ''
     return date_x, time_x
 
 

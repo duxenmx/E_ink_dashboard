@@ -77,7 +77,7 @@ def get_meet_mod(cred_file, creddir):
         else:
             cal_var_date = str(start_date) + '-' + str(end_date)
             cal_var_time = str(start_time)
-            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 26)
+            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 24)
             # limit of 16 char
             cal_var = cal_var_date, cal_var_time,  cal_var_item_1, cal_var_item_2
             g_cal.append(cal_var)
@@ -98,8 +98,12 @@ def draw_meet_mod(t_s_x, t_s_y,  cal_items, draw, color):
                           str(cal_items[i][0]), font=d_f.font_size(18), fill=color)
                 draw.text((t_s_x+100, t_s_y),
                           str(cal_items[i][1]), font=d_f.font_size(18), fill=color)
-                draw.text((t_s_x+170, t_s_y), " - " +
-                          str(cal_items[i][2]) + " ", font=d_f.font_size(18), fill=color)
+                if len(str(cal_items[i][0])) < 10:
+                    draw.text((t_s_x+170, t_s_y), " - " +
+                              str(cal_items[i][2]) + " ", font=d_f.font_size(18), fill=color)
+                else:
+                    draw.text((t_s_x+190, t_s_y), " - " +
+                              str(cal_items[i][2]) + " ", font=d_f.font_size(18), fill=color)
                 t_s_y = t_s_y + 25
                 x_items = x_items + 1
                 if cal_items[i][3] != " ":
@@ -110,8 +114,12 @@ def draw_meet_mod(t_s_x, t_s_y,  cal_items, draw, color):
             else:
                 draw.text((t_s_x+100, t_s_y),
                           str(cal_items[i][1]), font=d_f.font_size(18), fill=color)
-                draw.text((t_s_x+170, t_s_y), " - " +
-                          str(cal_items[i][2]) + " ", font=d_f.font_size(18), fill=color)
+                if len(str(cal_items[i][0])) < 10:
+                    draw.text((t_s_x+170, t_s_y), " - " +
+                              str(cal_items[i][2]) + " ", font=d_f.font_size(18), fill=color)
+                else:
+                    draw.text((t_s_x+190, t_s_y), " - " +
+                              str(cal_items[i][2]) + " ", font=d_f.font_size(18), fill=color)
                 t_s_y = t_s_y + 25
                 x_items = x_items + 1
                 if cal_items[i][3] != " ":
