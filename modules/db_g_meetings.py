@@ -1,11 +1,13 @@
+"""Display calendar events."""
+
 import datetime
 # import time
 import pickle
 import os.path
+import logging
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import logging
 from modules import d_functions as d_f
 
 
@@ -15,6 +17,7 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 
 def get_calendar_service(creds_file, creddir):
+    """Log in to the calendar service, either by saved credentials or manual login."""
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -41,11 +44,13 @@ def get_calendar_service(creds_file, creddir):
 
 
 def get_meet_mod(cred_file, creddir):
+    """Pull meeting list from calendar service."""
+
     service = get_calendar_service(cred_file, creddir)
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
-    # print('Getting List o 10 events')
+    # print('Getting List of 8 events')
     events_result = service.events().list(
         calendarId='primary', timeMin=now,
         maxResults=8, singleEvents=True,
@@ -63,29 +68,27 @@ def get_meet_mod(cred_file, creddir):
     for event in events:
         start_date, start_time = d_f.sep_datetime(
             event['start'].get('dateTime', event['start'].get('date')))
-        end_date, end_time = d_f.sep_datetime(
+        end_date, _ = d_f.sep_datetime(
             event['end'].get('dateTime', event['end'].get('date')))
         # time_conv = get_time(start)
 
         if str(start_date) == str(end_date):
             cal_var_date = str(start_date)
-            cal_var_time = str(start_time)
-            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 26)
-            # limit of 16 char
-            cal_var = cal_var_date, cal_var_time,  cal_var_item_1, cal_var_item_2
-            g_cal.append(cal_var)
+            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 26)		# limit of 26 char
         else:
             cal_var_date = str(start_date) + '-' + str(end_date)
-            cal_var_time = str(start_time)
-            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 24)
-            # limit of 16 char
-            cal_var = cal_var_date, cal_var_time,  cal_var_item_1, cal_var_item_2
-            g_cal.append(cal_var)
+            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 24)		# limit of 24 char
+
+        cal_var_time = str(start_time)
+        cal_var = cal_var_date, cal_var_time,  cal_var_item_1, cal_var_item_2
+        g_cal.append(cal_var)
 
     return g_cal
 
 
 def draw_meet_mod(t_s_x, t_s_y,  cal_items, draw, color):
+    """Display meetings on canvas."""
+
     draw.text((t_s_x, t_s_y), "Meetings:",  font=d_f.font_size(24), fill=color)
     t_s_y = t_s_y+32
     x_items = 0
@@ -131,6 +134,8 @@ def draw_meet_mod(t_s_x, t_s_y,  cal_items, draw, color):
 
 
 def run_meeting_mod(CREDENTIALS_FILE, creddir, t_s_x, t_s_y, draw, color):
+    """Call functions to Get meeting list and display them."""
+
     cal_items = get_meet_mod(CREDENTIALS_FILE, creddir)
     draw_meet_mod(t_s_x, t_s_y,  cal_items, draw, color)
     cal_items.clear()

@@ -1,24 +1,33 @@
-import requests
+"""Show transit system times."""
+
 import datetime
-from modules import d_functions as d_f
 from datetime import timedelta
-bus_stop = []
+import requests
+from modules import d_functions as d_f
 
 
 def route_format(t_route_dest):
-    t_route_dest_0 = t_route_dest
+    """Shorten destinations to save space."""
+
+    #Following block is equivalent to the return at the end.
+    #t_route_dest_0 = t_route_dest
+    #if t_route_dest_0 == "COMM'L-BDWAY STN" or t_route_dest_0 == "TO GRANVILLE":
+    #    if t_route_dest_0 == "TO GRANVILLE":
+    #        t_route_dest_0 = "GRANVILLE"
+    #    else:
+    #        t_route_dest_0 = "COM-BW STN"
+    #else:
+    #    t_route_dest_0 = t_route_dest
+    #return t_route_dest_0
+
     # add more route name formatting to your choice to save dsiplay space
-    if t_route_dest_0 == "COMM'L-BDWAY STN" or t_route_dest_0 == "TO GRANVILLE":
-        if t_route_dest_0 == "TO GRANVILLE":
-            t_route_dest_0 = "GRANVILLE"
-        else:
-            t_route_dest_0 = "COM-BW STN"
-    else:
-        t_route_dest_0 = t_route_dest
-    return t_route_dest_0
+    # If there's a substitution in the dictionary, use it, otherwise return the original
+    return {"TO GRANVILLE": "GRANVILLE", "COMM'L-BDWAY STN": "1"}.get(t_route_dest, t_route_dest)
 
 
 def ELT_format(ELT):
+    """Unknown."""
+
     if d_f.isTimeFormat(ELT):
         t_sch_ELT = datetime.datetime.strptime(
             str(ELT), '%I:%M%p %Y-%m-%d')
@@ -30,6 +39,8 @@ def ELT_format(ELT):
 
 
 def EC_format(EC):
+    """Unknown."""
+
     if EC < 60:
         EC_time = ' min'
     else:
@@ -42,6 +53,8 @@ def EC_format(EC):
 
 
 def get_transit(TRANSLINK_URL, T_STOP, T_API_KEY, T_BUS, T_BUS_TIME, color):
+    """Download transit schedule."""
+
     T_URL = TRANSLINK_URL+T_STOP + '/estimates?apiKey=' + \
         T_API_KEY + '&count=' + T_BUS + '&timeframe=' + T_BUS_TIME
     # print(T_URL)
@@ -58,7 +71,7 @@ def get_transit(TRANSLINK_URL, T_STOP, T_API_KEY, T_BUS, T_BUS_TIME, color):
             print('Connection error.')
             d_f.display_error('TRANSIT CONNECTION', color)
     error = None
-    while error == None:
+    while error is None:
         # Check status of code request
         if response_t.status_code == 200:
             # print('Connection to Translink successful.')
@@ -99,27 +112,32 @@ def get_transit(TRANSLINK_URL, T_STOP, T_API_KEY, T_BUS, T_BUS_TIME, color):
 
             return bus_sch
 
-            error = True
+            #error = True		#Unreachable as we've already return'ed
 
         else:
             # Call function to display HTTP error
             d_f.display_error('HTTP TRANSIT', color)
 
 
-def draw_transit_mod(tran_s_x, tran_s_y, bus_stop, LOCATION, color, draw):
+def draw_transit_mod(tran_s_x, tran_s_y, bus_stop_data, LOCATION, color, draw):
+    """Place bus schedule on canvas."""
+
     draw.text((tran_s_x, tran_s_y-40), LOCATION +
               ' - TRANSLINK', font=d_f.font_size(30), fill=color)
-    for x in range(len(bus_stop)):
+    for x in range(len(bus_stop_data)):
         for y in (0, 1):
-            if bus_stop[x][y] != "":
-                draw.text((tran_s_x, tran_s_y), bus_stop[x][y],
+            if bus_stop_data[x][y] != "":
+                draw.text((tran_s_x, tran_s_y), bus_stop_data[x][y],
                           font=d_f.font_size(22), fill=color)
-                # print(bus_stop[x][y])
+                # print(bus_stop_data[x][y])
                 tran_s_y = tran_s_y + 25
 
 
 def run_transit_mod(TRANSLINK_URL, t_stop_no, T_API_KEY, T_BUS,
                     T_BUS_TIME,  LOCATION,  mod_t_s_x, mod_t_s_y, draw, color):
+    """Call functions to retrieve and display bus schedule."""
+
+    bus_stop = []
     for x_stop in (t_stop_no):
         bus_stop.append(get_transit(
             TRANSLINK_URL, x_stop, T_API_KEY, T_BUS, T_BUS_TIME, color))

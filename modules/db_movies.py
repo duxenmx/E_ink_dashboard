@@ -1,12 +1,15 @@
+"""Incomplete module that is intended to retrieve movie listings."""
+
 import requests
 # import d_functions as d_f
 from PIL import Image
 
 
-def get_movies():
+def get_movies(C_URL_1):
+    """Pull down movie listings."""
     error_connect = True
 
-    while error_connect == True:
+    while error_connect is True:
         try:
             # HTTP request
             # print('Attempting to connect to OWM.')
@@ -22,10 +25,10 @@ def get_movies():
         # delete the comment below
         #
     error = None
-    while error == None:
+    while error is None:
         # Check status of code request
         if response_c_1.status_code == 200:
-            # print('Connection to Open Weather successful.')
+            # print('Connection to Movies successful.')
             c_1_data = response_c_1.json()
             cur_exch = []
 
