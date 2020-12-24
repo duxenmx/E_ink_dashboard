@@ -5,8 +5,9 @@ import datetime
 import calendar
 import random
 import os
-from waveshare_epd import epd7in5_V2
+import requests
 from PIL import Image, ImageDraw, ImageFont
+from waveshare_epd import epd7in5_V2
 
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'font')
@@ -16,6 +17,37 @@ epd = epd7in5_V2.EPD()
 # Set the colors
 black = 'rgb(0,0,0)'
 white = 'rgb(255,255,255)'
+
+
+def url_content(base_url, module_name, header_dict, error_color):
+    """Retrieve the content at base_url.  If connection fails or the status code is anything but 200, display an error."""
+
+    response_content = None
+    error_connect = True
+    while error_connect is True:
+        try:
+            # HTTP request
+            # print(module_name + ': Attempting to connect to API: ' + base_url)
+            if headers:
+                response_content = requests.get(str(base_url), headers=header_dict)
+            else:
+                response_content = requests.get(str(base_url))
+            # print('Connection to API successful.')
+            error_connect = None
+        except:
+            # Call function to display connection error
+            print(module_name + ': Connection error.')
+            # error_connect = None
+            display_error(module_name + ' API connection failed', error_color)
+            # break
+    # Check status of code request
+    if response_content.status_code != 200:
+        display_error(module_name + ': Return code not 200, was ' + str(response_content.status_code), error_color)
+        #Should we force content to null if the response code is not 200?
+        #response_content = None
+
+    return response_content
+
 
 
 def choose_mod(mod_choice, mod_turn):
@@ -184,7 +216,7 @@ def cur_hr():
 
 
 def isTimeFormat(time_value):
-    """"""
+    """Unclear."""
 
     try:
         time.strptime(time_value, '%I:%M%p %Y-%m-%d')

@@ -2,7 +2,7 @@
 """Retrieve and display weather."""
 
 import os
-import requests
+#import requests		#No longer needed in this module
 from PIL import Image
 from modules import d_functions as d_f
 
@@ -16,86 +16,88 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
         LONGITUDE + '&units=' + UNITS + '&appid=' + W_API_KEY + \
         '&exclude=hourly,minutely,alerts'
     # print(W_URL)
-    error_connect = True
-    while error_connect:
-        try:
-            # HTTP request
-            # print('Attempting to connect to OWM.')
-            response_w = requests.get(str(W_URL))
-            error_connect = None
-        except:
-            # Call function to display connection error
-            print('Connection error.')
-            # error_connect = None
-            # error = True
-            d_f.display_error(' WEATHER CONNECTION', color)
-            # break
-        # delete the comment below
-        #
-    error = None
-    while error is None:
-        # Check status of code request
-        if response_w.status_code == 200:
-            # print('Connection to Open Weather successful.')
-            w_data = response_w.json()
-            current = w_data['current']
-            utc_time = current['dt']
-            day_name = d_f.get_time(utc_time)
-            temp_current = current['temp']
-            #feels_like = current['feels_like']
-            #humidity = current['humidity']
-            #wind = current['wind_speed']
-            weather = current['weather']
-            report = weather[0]['description']
-            icon_code = weather[0]['icon']
-            # icon_URL = 'http://openweathermap.org/img/wn/'+ icon_code +'@4x.png'
-            # get daily dict block
-            daily = w_data['daily']
-            #daily_precip_float = daily[0]['pop']
-            #daily_precip_percent = daily_precip_float * 100
-            daily_temp = daily[0]['temp']
-            temp_max = daily_temp['max']
-            temp_min = daily_temp['min']
 
-            if UNITS == "metric":
-                unit = "C"
-            elif UNITS == "imperial":
-                unit = "F"
+    #Following block replaced by "response_g = .../if response_g:" lines
+    #error_connect = True
+    #while error_connect:
+    #    try:
+    #        # HTTP request
+    #        # print('Attempting to connect to OWM.')
+    #        response_w = requests.get(str(W_URL))
+    #        error_connect = None
+    #    except:
+    #        # Call function to display connection error
+    #        print('Connection error.')
+    #        # error_connect = None
+    #        # error = True
+    #        d_f.display_error(' WEATHER CONNECTION', color)
+    #        # break
+    #error = None
+    #while error is None:
+    #    # Check status of code request
+    #    if response_w.status_code != 200:
+    #        # print('Connection to Open Weather successful.')
+    #        # Call function to display HTTP error
+    #        d_f.display_error('HTTP WEATHER', color)
+    #    else:
 
-            weather_data = []
-            weather_data.append('Today is ' + str(day_name))
-            weather_data.append(str(format(temp_current, '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
-            # weather_data.append('Feels Like: ' + str(feels_like))
-            # weather_data.append('Humidity: ' + str(humidity))
-            # weather_data.append('Wind Speed: '+str(wind))
-            if str(report.title()) == 'heavy intensity rain':
+
+    weather_data = []
+    response_w = d_f.url_content(W_URL, 'weather', {}, color)
+    if response_w:
+        w_data = response_w.json()
+        current = w_data['current']
+        utc_time = current['dt']
+        day_name = d_f.get_time(utc_time)
+        temp_current = current['temp']
+        #feels_like = current['feels_like']
+        #humidity = current['humidity']
+        #wind = current['wind_speed']
+        weather = current['weather']
+        report = weather[0]['description']
+        icon_code = weather[0]['icon']
+        # icon_URL = 'http://openweathermap.org/img/wn/'+ icon_code +'@4x.png'
+        # get daily dict block
+        daily = w_data['daily']
+        #daily_precip_float = daily[0]['pop']
+        #daily_precip_percent = daily_precip_float * 100
+        daily_temp = daily[0]['temp']
+        temp_max = daily_temp['max']
+        temp_min = daily_temp['min']
+
+        if UNITS == "metric":
+            unit = "C"
+        elif UNITS == "imperial":
+            unit = "F"
+
+        weather_data.append('Today is ' + str(day_name))
+        weather_data.append(str(format(temp_current, '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
+        # weather_data.append('Feels Like: ' + str(feels_like))
+        # weather_data.append('Humidity: ' + str(humidity))
+        # weather_data.append('Wind Speed: '+str(wind))
+        if str(report.title()) == 'heavy intensity rain':
+            weather_data.append('heavy rain')
+        else:
+            weather_data.append(str(report.title()))
+        weather_data.append(str(format(temp_max, '.0f')) +
+                            u'\N{DEGREE SIGN}' + str(unit)+' / ' + str(format(temp_min, '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
+        # weather_data.append('Probabilty of Precipitation: ' +
+        #                    str(daily_precip_percent) + '%')
+        weather_data.append(str(icon_code))
+        weather_data.append("Forecast")
+        for x in range(0, 5):
+            weather_data.append(str(d_f.get_time(daily[x]['dt'])))
+            weather_data.append(str(format(daily[x]['temp']['max'], '.0f')) +
+                                u'\N{DEGREE SIGN}' + str(unit)+' / ' + str(format(daily[x]['temp']['min'], '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
+            weather_data.append(daily[x]['weather'][0]['icon'])
+            if daily[x]['weather'][0]['description'] == 'heavy intensity rain':
                 weather_data.append('heavy rain')
             else:
-                weather_data.append(str(report.title()))
-            weather_data.append(str(format(temp_max, '.0f')) +
-                                u'\N{DEGREE SIGN}' + str(unit)+' / ' + str(format(temp_min, '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
-            # weather_data.append('Probabilty of Precipitation: ' +
-            #                    str(daily_precip_percent) + '%')
-            weather_data.append(str(icon_code))
-            weather_data.append("Forecast")
-            for x in range(0, 5):
-                weather_data.append(str(d_f.get_time(daily[x]['dt'])))
-                weather_data.append(str(format(daily[x]['temp']['max'], '.0f')) +
-                                    u'\N{DEGREE SIGN}' + str(unit)+' / ' + str(format(daily[x]['temp']['min'], '.0f')) + u'\N{DEGREE SIGN}' + str(unit))
-                weather_data.append(daily[x]['weather'][0]['icon'])
-                if daily[x]['weather'][0]['description'] == 'heavy intensity rain':
-                    weather_data.append('heavy rain')
-                else:
-                    weather_data.append(daily[x]['weather'][0]['description'])
+                weather_data.append(daily[x]['weather'][0]['description'])
 
-            w_data = []
-            return weather_data
+    return weather_data
 
-            #error = True		#Will never be reached as we return'ed above.
 
-        else:
-            # Call function to display HTTP error
-            d_f.display_error('HTTP WEATHER', color)
 
 
 def draw_weather_mod(w_s_x, w_s_y, w_info, color, picdir, template, draw):

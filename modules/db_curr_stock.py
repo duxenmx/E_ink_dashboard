@@ -2,7 +2,7 @@
 """Show stock values and currency conversion rates."""
 
 import datetime
-import requests
+#import requests		#No longer needed in this module
 from modules import d_functions as d_f
 
 
@@ -16,42 +16,47 @@ def get_currency(C_1_URL, C_1_API, LOCAL_CUR, C_CHECK, color):
 
     C_URL_1 = str(C_1_URL) + '/api/v7/convert?q=' + \
         str(C_CHECK) + '_' + str(LOCAL_CUR) + '&compact=ultra&apiKey=' + str(C_1_API)
-
     # print(C_URL_1)
-    error_connect = True
-    while error_connect is True:
-        try:
-            # HTTP request
-            # print('Attempting to connect to Currencyconverterapi.')
-            response_c_1 = requests.get(str(C_URL_1))
 
-            error_connect = None
-        except:
-            # Call function to display connection error
-            print('Connection error.')
-            # error_connect = None
-            error = True			#Should this be error_connect instead of error?
-            d_f.display_error(' CURRENCY CONNECTION', color)
-            # break
-        # delete the comment below
-        #
-    error = None
-    while error is None:
-        # Check status of code request
-        if response_c_1.status_code == 200:
-            # print('Connection to Currencyconverterapi successful.')
 
-            c_1_data = response_c_1.json()
-            cur_exch = ''
-            cur_exch = "{:.4f}".format(float(c_1_data[str(C_CHECK) + '_'+str(LOCAL_CUR)]))
+    #Following block replaced by "response_c_1 = .../if response_c_1::" lines
+    #error_connect = True
+    #while error_connect is True:
+    #    try:
+    #        # HTTP request
+    #        # print('Attempting to connect to Currencyconverterapi.')
+    #        response_c_1 = requests.get(str(C_URL_1))
 
-            return cur_exch
-            #error = True		#Never executed since we return'ed above
+    #        error_connect = None
+    #    except:
+    #        # Call function to display connection error
+    #        print('Connection error.')
+    #        # error_connect = None
+    #        error = True			#Should this be error_connect instead of error?
+    #        d_f.display_error(' CURRENCY CONNECTION', color)
+    #        # break
+    #    # delete the comment below
+    #    #
+    #error = None
+    #while error is None:
+    #    # Check status of code request
+    #    if response_c_1.status_code != 200:
+    #        d_f.display_error('HTTP CURRENCY', color)
+    #        # Call function to display HTTP error
+    #        # break
+    #    else:
 
-        else:
-            d_f.display_error('HTTP CURRENCY', color)
-            # Call function to display HTTP error
-            # break
+
+    cur_exch = ''
+    response_c_1 = d_f.url_content(C_URL_1, 'currency_1', {}, color)
+    if response_c_1:
+        # print('Connection to Currencyconverterapi successful.')
+
+        c_1_data = response_c_1.json()
+        cur_exch = "{:.4f}".format(float(c_1_data[str(C_CHECK) + '_'+str(LOCAL_CUR)]))
+
+    return cur_exch
+
 
 
 def get_btc_eth(C_3_URL, C_4_URL, LOCAL_CUR,  color):
@@ -59,47 +64,57 @@ def get_btc_eth(C_3_URL, C_4_URL, LOCAL_CUR,  color):
 
     C_URL_3 = C_3_URL + str(LOCAL_CUR) + '.json'
     C_URL_4 = C_4_URL + str(LOCAL_CUR).lower()
-    # print(C_URL_1)
-    error_connect = True
-    while error_connect is True:
-        try:
-            # HTTP request
-            # print('Attempting to connect to Crypto.')
-            response_c_3 = requests.get(str(C_URL_3))
-            response_c_4 = requests.get(str(C_URL_4))
+    # print(C_URL_3)
+    # print(C_URL_4)
 
-            error_connect = None
-        except:
-            # Call function to display connection error
-            print('Connection error.')
-            # error_connect = None
-            error = True
-            d_f.display_error(' CRYPTO CONNECTION', color)
-            # break
-        # delete the comment below
-        #
-    error = None
-    while error is None:
-        # Check status of code request
-        if response_c_3.status_code == 200 and response_c_4.status_code == 200:
-            # print('Connection to Crypto successful.')
 
-            c_3_data = response_c_3.json()
-            c_4_data = response_c_4.json()
+    #Following block replaced by "response_c_3 = .../if response_c3..." lines
+    #error_connect = True
+    #while error_connect is True:
+    #    try:
+    #        # HTTP request
+    #        # print('Attempting to connect to Crypto.')
+    #        response_c_3 = requests.get(str(C_URL_3))
+    #        response_c_4 = requests.get(str(C_URL_4))
 
-            bitcoin_exchange = "1 BTC: " + \
-                str("{:.2f}".format(float(c_3_data['bpi'][str(LOCAL_CUR)]['rate_float'])))
-            eth_exchange = "1 ETH: " + \
-                str("{:.2f}".format(float(c_4_data['ethereum'][str(LOCAL_CUR).lower()])))
+    #        error_connect = None
+    #    except:
+    #        # Call function to display connection error
+    #        print('Connection error.')
+    #        # error_connect = None
+    #        error = True
+    #        d_f.display_error(' CRYPTO CONNECTION', color)
+    #        # break
+    #    # delete the comment below
+    #    #
+    #error = None
+    #while error is None:
+    #    # Check status of code request
+    #    if response_c_3.status_code != 200 or response_c_4.status_code != 200:
+    #        d_f.display_error('HTTP CRYPTO', color)
+    #        # Call function to display HTTP error
+    #        # break
+    #        # d_f.display_error('HTTP CURRENCY', color)
+    #    else:
 
-            return bitcoin_exchange, eth_exchange
-            #error = True		#Never executed since we return'ed above
 
-        else:
-            d_f.display_error('HTTP CRYPTO', color)
-            # Call function to display HTTP error
-            # break
-            # d_f.display_error('HTTP CURRENCY', color)
+    bitcoin_exchange = ""
+    eth_exchange = ""
+    response_c_3 = d_f.url_content(C_URL_3, 'currency_3', {}, color)
+    response_c_4 = d_f.url_content(C_URL_4, 'currency_4', {}, color)
+    if response_c_3 and response_c_4:
+        # print('Connection to Crypto successful.')
+
+        c_3_data = response_c_3.json()
+        c_4_data = response_c_4.json()
+
+        bitcoin_exchange = "1 BTC: " + \
+            str("{:.2f}".format(float(c_3_data['bpi'][str(LOCAL_CUR)]['rate_float'])))
+        eth_exchange = "1 ETH: " + \
+            str("{:.2f}".format(float(c_4_data['ethereum'][str(LOCAL_CUR).lower()])))
+
+    return bitcoin_exchange, eth_exchange
+
 
 
 def get_year():
@@ -119,95 +134,103 @@ def get_stock_week(ST_URL, ST_API, ST_C, st_base, LOCAL_CUR, color):
     """Currently unused - see get_stock_weekend which is used unconditionally."""
 
     st_date = get_year()
-    URL_ST = ST_URL+ST_C + "/" + str(st_date) + "?apiKey=" + str(ST_API)
+    URL_ST = ST_URL + ST_C + "/" + str(st_date) + "?apiKey=" + str(ST_API)
     # print(URL_ST)
-    error_connect = True
-    while error_connect is True:
-        try:
-            # HTTP request
-            # print('Attempting to connect to Stock.')
-            response_st = requests.get(str(URL_ST))
-            error_connect = None
-        except:
-            # Call function to display connection error
-            print('Connection error.')
-            # error_connect = None
-            # error = True
-            d_f.display_error(' STOCK CONNECTION', color)
-            # break
-        # delete the comment below
-        #
-    error = None
-    while error is None:
-        # Check status of code request
-        if response_st.status_code == 200:
-            # print('Connection to Stock successful.')
-            st_data = response_st.json()
-            st_open = st_data["open"]
-            st_symbol = st_data["symbol"]
-            st_close = st_data["close"]
-            stocks = []
-            stocks.append("-" + st_symbol + ":")
-            stocks.append(
-                "O: " + str("{:.2f}".format((float(st_open)*float(st_base)))))
-            stocks.append(
-                "C: " + str("{:.2f}".format((float(st_close)*float(st_base)))))
 
-            return stocks
-            #error = True		#Never executed since we return'ed above
 
-        else:
-            d_f.display_error('HTTP STOCK', color)
-            # Call function to display HTTP error
-            # break
-            # d_f.display_error('HTTP STOCK', color)
+    #Following block replaced by "response_st = .../if response_st:" lines
+    #error_connect = True
+    #while error_connect is True:
+    #    try:
+    #        # HTTP request
+    #        # print('Attempting to connect to Stock.')
+    #        response_st = requests.get(str(URL_ST))
+    #        error_connect = None
+    #    except:
+    #        # Call function to display connection error
+    #        print('Connection error.')
+    #        # error_connect = None
+    #        # error = True
+    #        d_f.display_error(' STOCK CONNECTION', color)
+    #        # break
+    #error = None
+    #while error is None:
+    #    # Check status of code request
+    #    if response_st.status_code != 200:
+    #        d_f.display_error('HTTP STOCK', color)
+    #        # Call function to display HTTP error
+    #        # break
+    #        # d_f.display_error('HTTP STOCK', color)
+    #    else:
+
+
+    stocks = []
+    response_st = d_f.url_content(str(URL_ST), 'currency_stock_week', {}, color)
+    if response_st:
+        # print('Connection to Stock successful.')
+        st_data = response_st.json()
+        st_open = st_data["open"]
+        st_symbol = st_data["symbol"]
+        st_close = st_data["close"]
+        stocks.append("-" + st_symbol + ":")
+        stocks.append(
+            "O: " + str("{:.2f}".format((float(st_open)*float(st_base)))))
+        stocks.append(
+            "C: " + str("{:.2f}".format((float(st_close)*float(st_base)))))
+
+    return stocks
+
 
 
 def get_stock_weekend(ST_URL, ST_API, ST_C, st_base, LOCAL_CUR, color):
     """Request most recent? stock values."""
 
-    URL_ST = ST_URL+ST_C + "/prev?apiKey=" + str(ST_API)
+    URL_ST = ST_URL + ST_C + "/prev?apiKey=" + str(ST_API)
     # print(URL_ST)
-    error_connect = True
-    while error_connect is True:
-        try:
-            # HTTP request
-            # print('Attempting to connect to Stock.')
-            response_st = requests.get(str(URL_ST))
-            error_connect = None
-        except:
-            # Call function to display connection error
-            print('Connection error.')
-            # error_connect = None
-            # error = True
-            d_f.display_error(' STOCK CONNECTION', color)
-            # break
-        # delete the comment below
-        #
-    error = None
-    while error is None:
-        # Check status of code request
-        if response_st.status_code == 200:
-            # print('Connection to Stock successful.')
-            st_data = response_st.json()
-            st_open = st_data["results"][0]["o"]
-            st_symbol = st_data["results"][0]["T"]
-            st_close = st_data["results"][0]["c"]
-            stocks = []
-            stocks.append("-" + st_symbol + ":")
-            stocks.append(
-                "O: " + str("{:.2f}".format((float(st_open)*float(st_base)))))
-            stocks.append(
-                "C: " + str("{:.2f}".format((float(st_close)*float(st_base)))))
 
-            return stocks
-            #error = True		#Never executed since we return'ed above
 
-        else:
-            d_f.display_error('HTTP STOCK', color)
-            # Call function to display HTTP error
-            # break
-            # d_f.display_error('HTTP STOCK', color)
+    #Following block replaced by "response_st = .../if response_st:" lines
+    #error_connect = True
+    #while error_connect is True:
+    #    try:
+    #        # HTTP request
+    #        # print('Attempting to connect to Stock.')
+    #        response_st = requests.get(str(URL_ST))
+    #        error_connect = None
+    #    except:
+    #        # Call function to display connection error
+    #        print('Connection error.')
+    #        # error_connect = None
+    #        # error = True
+    #        d_f.display_error(' STOCK CONNECTION', color)
+    #        # break
+    #error = None
+    #while error is None:
+    #    # Check status of code request
+    #    if response_st.status_code != 200:
+    #        d_f.display_error('HTTP STOCK', color)
+    #        # Call function to display HTTP error
+    #        # break
+    #        # d_f.display_error('HTTP STOCK', color)
+    #    else:
+
+
+    stocks = []
+    response_st = d_f.url_content(str(URL_ST), 'currency_stock_weekend', {}, color)
+    if response_st:
+        # print('Connection to Stock successful.')
+        st_data = response_st.json()
+        st_open = st_data["results"][0]["o"]
+        st_symbol = st_data["results"][0]["T"]
+        st_close = st_data["results"][0]["c"]
+        stocks.append("-" + st_symbol + ":")
+        stocks.append(
+            "O: " + str("{:.2f}".format((float(st_open)*float(st_base)))))
+        stocks.append(
+            "C: " + str("{:.2f}".format((float(st_close)*float(st_base)))))
+
+    return stocks
+
 
 
 def run_st_cur_info(C_1_URL, C_3_URL, C_4_URL, LOCAL_CUR, CURR_CHECK, C_1_API,  ST_WE_URL, ST_W_URL, ST_API, ST_C, color):
