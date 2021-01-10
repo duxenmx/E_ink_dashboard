@@ -1,12 +1,12 @@
-
+"""Supporting functions for the E_ink_dashboard project."""
 
 import time
 import datetime
-from waveshare_epd import epd7in5_V2
-from PIL import Image, ImageDraw, ImageFont
 import calendar
 import random
 import os
+from waveshare_epd import epd7in5_V2
+from PIL import Image, ImageDraw, ImageFont
 
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'font')
@@ -19,9 +19,11 @@ white = 'rgb(255,255,255)'
 
 
 def choose_mod(mod_choice, mod_turn):
-    if mod_choice == "weather" or mod_choice == "transit" or mod_choice == "tasklist":
+    """Unknown."""
+
+    if mod_choice in ("weather", "transit", "tasklist"):
         mod_turn = 0
-    elif mod_choice == "c-s" or mod_choice == "news" or mod_choice == "meetings":
+    elif mod_choice in ("c-s", "news", "meetings"):
         mod_turn = 1
     elif mod_choice == "off":
         mod_turn = 2
@@ -38,13 +40,14 @@ def choose_mod(mod_choice, mod_turn):
 
 
 def time_in_range(start_hour, end_hour):
+    """Return true if x is in the range [start, end]"""
+
     start = datetime.time((start_hour), 0, 0)
     end = datetime.time((end_hour), 0, 0)
     current_hour = datetime.datetime.now().strftime('%H')
     current_min = datetime.datetime.now().strftime('%M')
     current_sec = datetime.datetime.now().strftime('%S')
     x = datetime.time(int(current_hour), int(current_min), int(current_sec))
-    """Return true if x is in the range [start, end]"""
     if start <= end:
         return start <= x <= end
     else:
@@ -52,13 +55,14 @@ def time_in_range(start_hour, end_hour):
 
 
 def tir_min(hour, x_min, y_min, y_sec):
+    """Return true if x is in the range [start, end]"""
+
     start = datetime.time((hour),  (x_min), 0)
     end = datetime.time((hour),  (y_min), (y_sec))
     current_hour = datetime.datetime.now().strftime('%H')
     current_min = datetime.datetime.now().strftime('%M')
     current_sec = datetime.datetime.now().strftime('%S')
     x = datetime.time(int(current_hour), int(current_min), int(current_sec))
-    """Return true if x is in the range [start, end]"""
     if start <= end:
         return start <= x <= end
     else:
@@ -66,6 +70,8 @@ def tir_min(hour, x_min, y_min, y_sec):
 
 
 def sep_strings(it_str, chk_start):
+    """Appears to split string at the last space before or at a maximum string length."""
+
     chk_str = int(len(str(it_str)))
     chk_str_1 = chk_str
     check = False
@@ -73,7 +79,7 @@ def sep_strings(it_str, chk_start):
     if chk_str > chk_start:
         chk_str = chk_start
     else:
-        chk_str = chk_str
+        #chk_str = chk_str		#Does no action, not needed.
         check = True
     #print("after" + str(chk_str))
     while check is False:
@@ -82,7 +88,7 @@ def sep_strings(it_str, chk_start):
             # print("space_false: " + str(chk_str))
             check = False
         else:
-            chk_str = chk_str
+            #chk_str = chk_str		#Does no action, not needed.
             # print("space_true: " + str(chk_str))
             check = True
 
@@ -98,6 +104,8 @@ def sep_strings(it_str, chk_start):
 
 
 def draw_cal_mod(cal_s_x_0, cal_s_y, draw, color_1, color_2):
+    """Draw the calendar for this month."""
+
     cal_month = datetime.datetime.now().month
     cal_year = datetime.datetime.now().year
     cal_day = datetime.datetime.now().day
@@ -127,45 +135,68 @@ def draw_cal_mod(cal_s_x_0, cal_s_y, draw, color_1, color_2):
 
 
 def font_size(size):
-    fs = ImageFont.truetype(os.path.join(fontdir, 'BAHNSCHRIFT.TTF'), size)
-    #fs = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), size)
-    return fs
+    """Return a BAHNSCHRIFT font at the requested size."""
+
+    #Following block is equivalent to sole return statement at the end of the function.
+    #fs = ImageFont.truetype(os.path.join(fontdir, 'BAHNSCHRIFT.TTF'), size)
+    ##fs = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), size)
+    #return fs
+
+    #return ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), size)
+    return ImageFont.truetype(os.path.join(fontdir, 'BAHNSCHRIFT.TTF'), size)
 
 
 def get_time(local_time):
+    """Return Weekday, Month name and day of the month of the given time."""
+
     pst_time = time.localtime(int(local_time))
     pst_time = time.strftime('%A, %b %d', pst_time)
     return pst_time
 
 
 def get_year():
+    """Unsure - function name implies this returns a year, but it returns yyyy-mm-dd."""
+
     datetime_object = datetime.datetime.now()
     year_str = (str(datetime_object.year) + "-" +
-                str(datetime_object.month)+"-" + str(datetime_object.day))
+                str(datetime_object.month) + "-" + str(datetime_object.day))
     return year_str
 
 
 def dayname():
-    day_name = datetime.datetime.now().strftime("%A")
-    return day_name
+    """Return today's name."""
+
+    #Following are equivalent to the sole return at the end.
+    #day_name = datetime.datetime.now().strftime("%A")
+    #return day_name
+
+    return datetime.datetime.now().strftime("%A")
 
 
 def cur_hr():
-    cur_hr = datetime.datetime.now().strftime("%H")
-    return cur_hr
+    """Return 24 hour (0 padded) current hour."""
+
+    #Following are equivalent to sole return command at the end
+    #cur_hr_retval = datetime.datetime.now().strftime("%H")
+    #return cur_hr_retval
+
+    return datetime.datetime.now().strftime("%H")
 
 
-def isTimeFormat(input):
+def isTimeFormat(time_value):
+    """"""
+
     try:
-        time.strptime(input, '%I:%M%p %Y-%m-%d')
+        time.strptime(time_value, '%I:%M%p %Y-%m-%d')
         return True
     except ValueError:
         return False
 
-# define funciton for writing image and sleeping for 5 min.
 
 
 def sep_datetime(utc_datetime):
+    """Split a timespec into date and time strings."""
+
     if len(str(utc_datetime)) > 10:
 
         date_time_x = datetime.datetime.strptime(str(utc_datetime), '%Y-%m-%dT%H:%M:%S%z')
@@ -182,6 +213,8 @@ def sep_datetime(utc_datetime):
 
 
 def write_to_screen(image, sleep_seconds):
+    """Write an image to the screen and sleep for requested seconds."""
+
     print('Writing to screen.')
     # Write to screen
     h_image = Image.new('1', (epd.width, epd.height), 255)
@@ -198,7 +231,8 @@ def write_to_screen(image, sleep_seconds):
 
 
 def display_error(error_source, color):
-    # Display an error
+    """Display an error, then wait for 8 minutes."""
+
     print('Error in the', error_source, 'request.')
     # Initialize drawing
     error_image = Image.new('1', (epd.width, epd.height), 255)

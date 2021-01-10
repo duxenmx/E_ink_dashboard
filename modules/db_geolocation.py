@@ -1,13 +1,17 @@
+
+"""Retrieve geolocation data."""
+
 import requests
 from modules import d_functions
-g_data = []
 
 
 def get_geo(G_URL, G_API, color):
+    """Get geolocation data."""
+    g_data = []
     GEO_URL = str(G_URL) + '?api-key=' + str(G_API)
     # print(T_URL)
     error_connect = True
-    while error_connect == True:
+    while error_connect is True:
         try:
             # HTTP request
             # print('Attempting to connect to Translink.')
@@ -25,7 +29,7 @@ def get_geo(G_URL, G_API, color):
         # delete the comment below
         #
     error = None
-    while error == None:
+    while error is None:
         # Check status of code request
         if response_g.status_code == 200:
             # print('Connection to Translink successful.')

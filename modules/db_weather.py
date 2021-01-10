@@ -1,18 +1,23 @@
-import requests
-from modules import d_functions as d_f
-from PIL import Image
-import os
 
-w_info = []
+"""Retrieve and display weather."""
+
+import os
+import requests
+from PIL import Image
+from modules import d_functions as d_f
+
+#w_info = []			#Not neeeded as this is a paramter to draw_weather_mod and an internal variable for run_weather_mod.
 
 
 def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
+    """Retrieve the weather from openweathermap."""
+
     W_URL = WEATHER_URL + 'lat=' + LATITUDE + '&lon=' + \
         LONGITUDE + '&units=' + UNITS + '&appid=' + W_API_KEY + \
         '&exclude=hourly,minutely,alerts'
     # print(W_URL)
     error_connect = True
-    while error_connect == True:
+    while error_connect:
         try:
             # HTTP request
             # print('Attempting to connect to OWM.')
@@ -28,7 +33,7 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
         # delete the comment below
         #
     error = None
-    while error == None:
+    while error is None:
         # Check status of code request
         if response_w.status_code == 200:
             # print('Connection to Open Weather successful.')
@@ -86,7 +91,7 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
             w_data = []
             return weather_data
 
-            error = True
+            #error = True		#Will never be reached as we return'ed above.
 
         else:
             # Call function to display HTTP error
@@ -94,6 +99,8 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
 
 
 def draw_weather_mod(w_s_x, w_s_y, w_info, color, picdir, template, draw):
+    """Place weather report on the canvas."""
+
     icondir = os.path.join(picdir, 'icon')
     draw.text((w_s_x, w_s_y), w_info[0], font=d_f.font_size(28), fill=color)
     draw.text((w_s_x + 70, w_s_y + 45), w_info[1], font=d_f.font_size(45), fill=color)
@@ -120,6 +127,8 @@ def draw_weather_mod(w_s_x, w_s_y, w_info, color, picdir, template, draw):
 
 
 def run_weather_mod(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, mod_w_s_x, mod_w_s_y,  picdir, template, draw, color):
-    w_info = (get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color))
-    draw_weather_mod(mod_w_s_x, mod_w_s_y, w_info, color, picdir, template, draw)
-    w_info.clear()
+    """Call functions to retrieve and display weather."""
+
+    w_info_array = (get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color))
+    draw_weather_mod(mod_w_s_x, mod_w_s_y, w_info_array, color, picdir, template, draw)
+    #w_info_array.clear()		#Not needed as this will be cleared on function exit.

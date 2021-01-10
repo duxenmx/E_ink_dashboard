@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+"""Main program that displays the dashboard on the E-ink display."""
 
-
-from waveshare_epd import epd7in5_V2
 import json
-# import traceback
-from PIL import Image, ImageDraw
-from datetime import datetime
 import time
+import os
+# import traceback
+from datetime import datetime
+from PIL import Image, ImageDraw
+from waveshare_epd import epd7in5_V2
 from modules import d_functions as d_f
 from modules import db_transit as d_t
 from modules import db_tasklist as d_tl
@@ -14,7 +16,6 @@ from modules import db_weather as d_w
 from modules import db_news as d_n
 from modules import db_curr_stock as d_cs
 from modules import db_geolocation as d_geo
-import os
 
 
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')

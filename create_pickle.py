@@ -1,21 +1,25 @@
+#!/usr/bin/env python3
+
+"""Load credentials.  For the calendar, Use existing saved login credentials or ask the user to log in."""
 
 import pickle
 import os.path
 import json
+import logging
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import logging
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
-creddir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials')
+creddir_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials')
 creddir_2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials/dash_id.json')
 
 
 def get_calendar_service(creds_file, creddir):
+    """Load calendar credentials."""
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -45,4 +49,4 @@ with open(creddir_2, "r") as rdash_id:
     data = json.load(rdash_id)
 
 
-get_calendar_service(data["G_Meetings"]["CREDENTIALS_FILE"], creddir)
+get_calendar_service(data["G_Meetings"]["CREDENTIALS_FILE"], creddir_1)
