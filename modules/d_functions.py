@@ -19,6 +19,90 @@ black = 'rgb(0,0,0)'
 white = 'rgb(255,255,255)'
 
 
+#These are the default values for configuration options.
+default_options = {
+    "Transit":{
+        "T_URL":"http://api.translink.ca/RTTIAPI/V1/stops/",
+        "T_API_KEY":"",
+        "Stops":["12345"],
+        "T_BUS":"3",
+        "T_BUS_TIME":"10"
+    },
+    "Weather":{
+        "W_URL":"https://api.openweathermap.org/data/2.5/onecall?",
+        "W_API_KEY":"",
+        "UNITS":"metric"
+    },
+    "Currency":{
+        "C_URL_1":"https://free.currconv.com",
+        "C_API_KEY_1":"",
+        "C_URL_3":"https://api.coindesk.com/v1/bpi/currentprice/",
+        "C_URL_4" : "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=",
+        "CURR_CHECK": ["USD"]
+    },
+    "Stocks":{
+        "STOCK_API":"",
+        "STOCK_W_URL":"https://api.polygon.io/v1/open-close/",
+        "STOCK_WE_URL" :"https://api.polygon.io/v2/aggs/ticker/",
+        "STOCK_CHECK": ["BABA"]
+    },
+    "Geolocation":{
+        "G_URL":"https://api.ipdata.co/",
+        "G_API_KEY":""
+    },
+    "Tasklist":{
+        "gsheet_json":"gsheet_keys.json",
+        "sheetname":"Messageboard"
+    },
+    "G_Meetings":{
+        "CREDENTIALS_FILE":"credentials.json"
+    },
+    "Movies":{
+        "MOVIE_API":"",
+        "MOVIE_URL":"https://api.themoviedb.org/3/"
+    },
+    "News":{
+        "NEWS_API":"",
+        "NEWS_URL":"https://newsapi.org/v2/top-headlines?",
+        "NEWS_SOURCES" : "bbc-news,cnn,cbc-news"
+    },
+    "System":{
+        "waking_time":"6",
+        "sleeping_time":"23",
+        "refresh_time":"5",
+        "mod_1_choice":"random",
+        "mod_2_choice":"random",
+        "mod_3_choice":"random",
+        "mod_4_choice":"calendar",
+        "awake":"false"
+    }
+}
+
+
+def merge_dicts(starting_dict, new_values, path=None):
+    """Copy the contents of new_values over starting_dict so we can have user_selected options override the defaults."""
+    #Credit to https://stackoverflow.com/questions/7204805/how-to-merge-dictionaries-of-dictionaries , andrew cooke's answer
+    #This supports nested dictionaries in starting_dict and/or new_values
+    #If you want to leave starting_dict unmodified in the calling code, use "result = merge_dicts(dict(start_d), new_d)"
+
+    if path is None:
+        path = []
+    for nv_key in new_values:
+        if nv_key in starting_dict:
+            if isinstance(starting_dict[nv_key], dict) and isinstance(new_values[nv_key], dict):
+                merge_dicts(starting_dict[nv_key], new_values[nv_key], path + [str(nv_key)])
+            elif starting_dict[nv_key] == new_values[nv_key]:
+                pass # same leaf value
+            else:
+                starting_dict[nv_key] = new_values[nv_key]				#In our case we _want_ values in new_values to override existing entries in starting_dict.
+                #raise Exception('Conflict at %s' % '.'.join(path + [str(nv_key)]))
+        else:
+            starting_dict[nv_key] = new_values[nv_key]
+
+    return starting_dict
+
+
+
 def url_content(base_url, module_name, header_dict, error_color):
     """Retrieve the content at base_url.  If connection fails or the status code is anything but 200, display an error."""
 
@@ -28,7 +112,7 @@ def url_content(base_url, module_name, header_dict, error_color):
         try:
             # HTTP request
             # print(module_name + ': Attempting to connect to API: ' + base_url)
-            if headers:
+            if header_dict:
                 response_content = requests.get(str(base_url), headers=header_dict)
             else:
                 response_content = requests.get(str(base_url))

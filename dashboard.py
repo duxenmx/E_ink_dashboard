@@ -33,14 +33,14 @@ epd.init()
 epd.Clear()
 
 geo_data = []
-check_awake = 0
+check_awake = True
 mod_1_turn = 1
 mod_2_turn = 1
 mod_3_turn = 1
 mod_4_turn = 1
-news_load = 0
-cs_load = 0
-geo_load = 0
+news_load = True
+cs_load = True
+geo_load = True
 saved_hour = int(datetime.now().strftime('%H'))
 news_0 = []
 news_1 = []
@@ -51,7 +51,9 @@ curr_ex = []
 while True:
 
     with open(os.path.join(creddir, 'dash_id.json'), "r") as rdash_id:
-        data = json.load(rdash_id)
+        user_choices = json.load(rdash_id)
+    data = d_f.merge_dicts(dict(d_f.default_options), user_choices)	#values the user provides override the defaults.
+
     # Getting time information to know when its supposed to be active
     awake = data["System"]["awake"].lower()  # for testing mode to activate within sleeping hours
     refresh_sec = int(data["System"]["refresh_time"])  # time in seconds
@@ -62,7 +64,7 @@ while True:
     mod_3_choice = str(data["System"]["mod_3_choice"]).lower()
     mod_4_choice = str(data["System"]["mod_4_choice"]).lower()
     if d_f.time_in_range(waking_time, sleep_time) or awake == "true":
-        check_awake = 0
+        check_awake = True
         current_time = datetime.now().strftime('%I:%M%p')
         current_hour = int(datetime.now().strftime('%H'))
         # Open template file
@@ -71,11 +73,11 @@ while True:
         draw = ImageDraw.Draw(template)
 
         # populating the ids from the json file
-        if geo_load == 0:
+        if geo_load is True:
             geo_data.clear()
             geo_data = d_geo.get_geo(str(data["Geolocation"]["G_URL"]), str(
                 data["Geolocation"]["G_API_KEY"]), black)
-            geo_load = 1
+            geo_load = False
 
         W_API_KEY = str(data["Weather"]["W_API_KEY"])
         T_API_KEY = str(data["Transit"]["T_API_KEY"])
@@ -116,8 +118,8 @@ while True:
         mod_3_turn = d_f.choose_mod(mod_3_choice, mod_3_turn)
 
         if saved_hour != current_hour:
-            news_load = 0
-            cs_load = 0
+            news_load = True
+            cs_load = True
             saved_hour = current_hour
             news_1.clear()
             news_0.clear()
@@ -125,63 +127,63 @@ while True:
             curr_ex.clear()
 
         # TRANSIT  CALLS or news calls
-        if mod_1_turn == 0:
+        if mod_1_turn == 0 and T_API_KEY:
             mod_t_s_x = 8
             mod_t_s_y = 50
 
             print('Transit loaded')
 
             d_t.run_transit_mod(TRANSLINK_URL, t_stop_no, T_API_KEY, T_BUS,
-                                T_BUS_TIME,  LOCATION,  mod_t_s_x, mod_t_s_y, draw, black)
-        elif mod_1_turn == 1:
+                                T_BUS_TIME, LOCATION, mod_t_s_x, mod_t_s_y, draw, black)
+        elif mod_1_turn == 1 and NEWS_API:
             # news calls
             mod_t_s_x = 10
             mod_t_s_y = 10
 
-            if news_load == 0:
+            if news_load is True:
                 #print("news by country")
                 news_0 = d_n.get_news(NEWS_URL, NEWS_API, NEWS_SOURCES, NEWS_COUNTRY, 0, black)
                 #print("news by source")
                 news_1 = d_n.get_news(NEWS_URL, NEWS_API, NEWS_SOURCES, NEWS_COUNTRY, 1, black)
-                news_load = 1
+                news_load = False
                 print("news charged at " + str(saved_hour))
 
             print('News loaded')
 
-            if (d_f.tir_min(int(current_hour), 0, 15, 59) or d_f.tir_min(int(current_hour), 30, 45, 59)) and news_load == 1:
+            if (d_f.tir_min(int(current_hour), 0, 15, 59) or d_f.tir_min(int(current_hour), 30, 45, 59)) and news_load is False:
                 d_n.draw_news_mod(mod_t_s_x, mod_t_s_y, news_0, black, draw)
-            elif (d_f.tir_min(int(current_hour), 15, 30, 59) or d_f.tir_min(int(current_hour), 45, 59, 59)) and news_load == 1:
+            elif (d_f.tir_min(int(current_hour), 15, 30, 59) or d_f.tir_min(int(current_hour), 45, 59, 59)) and news_load is False:
                 d_n.draw_news_mod(mod_t_s_x, mod_t_s_y, news_1, black, draw)
         elif mod_1_turn == 2:
             print("Module 1 is off")
 
         # Weather or currency-stock
-        if mod_2_turn == 0:
+        if mod_2_turn == 0 and W_API_KEY:		#Require an API key before attempting to show weather
 
             mod_w_s_x = 440
             mod_w_s_y = 10
             print('Weather loaded')
             d_w.run_weather_mod(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY,
-                                mod_w_s_x, mod_w_s_y,  picdir, template, draw, black)
-        elif mod_2_turn == 1:
+                                mod_w_s_x, mod_w_s_y, picdir, template, draw, black)
+        elif mod_2_turn == 1 and C_1_API and ST_API:
             mod_w_s_x = 440
             mod_w_s_y = 10
 
-            if cs_load == 0:
+            if cs_load is True:
                 curr_ex, stock_it = d_cs.run_st_cur_info(
-                    C_1_URL, C_3_URL, C_4_URL, LOCAL_CUR, CURR_CHECK,  C_1_API, ST_WE_URL, ST_W_URL, ST_API, ST_C, black)
-                cs_load = 1
+                    C_1_URL, C_3_URL, C_4_URL, LOCAL_CUR, CURR_CHECK, C_1_API, ST_WE_URL, ST_W_URL, ST_API, ST_C, black)
+                cs_load = False
                 print("C-S charged at " + str(saved_hour))
 
             print('C-S loaded')
 
-            if d_f.tir_min(int(current_hour), 0, 59, 59) and cs_load == 1:
+            if d_f.tir_min(int(current_hour), 0, 59, 59) and cs_load is False:
                 d_cs.draw_cs_mod(mod_w_s_x, mod_w_s_y, draw, curr_ex, stock_it, LOCAL_CUR, black)
         elif mod_2_turn == 2:
             print("Module 2 is off")
 
         # populate Tasklist or meetings
-        if mod_3_turn == 0:
+        if mod_3_turn == 0 and gsheetjson:
             mod_tl_s_x = 10
             mod_tl_s_y = 265
             d_tl.run_tasklist_mod(gsheetjson, sheetname, creddir,
@@ -189,7 +191,7 @@ while True:
             print('Tasklist loaded')
             draw.rectangle((8, 450, 175, 475), fill=black)
             draw.text((8, 450), 'UPDATED: ' + str(current_time), font=d_f.font_size(20), fill=white)
-        elif mod_3_turn == 1:
+        elif mod_3_turn == 1 and meet_creds:
             mod_tl_s_x = 10
             mod_tl_s_y = 265
             d_gm.run_meeting_mod(meet_creds, creddir, mod_tl_s_x, mod_tl_s_y, draw, black)
@@ -223,8 +225,8 @@ while True:
     # if the device is in sleeping hours it will clean the screen to prevent burn out of the screen
     else:
         print('Device Sleeping.')
-        if check_awake == 0:
-            check_awake = 1
+        if check_awake is True:
+            check_awake = False
             epd.Clear()
             print('Sleeping for ' + str(refresh_sec) + ' min.')
             time.sleep(refresh_sec)
