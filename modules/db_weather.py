@@ -2,11 +2,8 @@
 """Retrieve and display weather."""
 
 import os
-#import requests		#No longer needed in this module
 from PIL import Image
 from modules import d_functions as d_f
-
-#w_info = []			#Not neeeded as this is a paramter to draw_weather_mod and an internal variable for run_weather_mod.
 
 
 def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
@@ -16,31 +13,6 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
         LONGITUDE + '&units=' + UNITS + '&appid=' + W_API_KEY + \
         '&exclude=hourly,minutely,alerts'
     # print(W_URL)
-
-    #Following block replaced by "response_g = .../if response_g:" lines
-    #error_connect = True
-    #while error_connect:
-    #    try:
-    #        # HTTP request
-    #        # print('Attempting to connect to OWM.')
-    #        response_w = requests.get(str(W_URL))
-    #        error_connect = None
-    #    except:
-    #        # Call function to display connection error
-    #        print('Connection error.')
-    #        # error_connect = None
-    #        # error = True
-    #        d_f.display_error(' WEATHER CONNECTION', color)
-    #        # break
-    #error = None
-    #while error is None:
-    #    # Check status of code request
-    #    if response_w.status_code != 200:
-    #        # print('Connection to Open Weather successful.')
-    #        # Call function to display HTTP error
-    #        d_f.display_error('HTTP WEATHER', color)
-    #    else:
-
 
     weather_data = []
     response_w = d_f.url_content(W_URL, 'weather', {}, color)
@@ -98,8 +70,6 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
     return weather_data
 
 
-
-
 def draw_weather_mod(w_s_x, w_s_y, w_info, color, picdir, template, draw):
     """Place weather report on the canvas."""
 
@@ -133,4 +103,3 @@ def run_weather_mod(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, mod_w_s_
 
     w_info_array = (get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color))
     draw_weather_mod(mod_w_s_x, mod_w_s_y, w_info_array, color, picdir, template, draw)
-    #w_info_array.clear()		#Not needed as this will be cleared on function exit.

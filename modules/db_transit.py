@@ -9,24 +9,13 @@ from modules import d_functions as d_f
 def route_format(t_route_dest):
     """Shorten destinations to save space."""
 
-    #Following block is equivalent to the return at the end.
-    #t_route_dest_0 = t_route_dest
-    #if t_route_dest_0 == "COMM'L-BDWAY STN" or t_route_dest_0 == "TO GRANVILLE":
-    #    if t_route_dest_0 == "TO GRANVILLE":
-    #        t_route_dest_0 = "GRANVILLE"
-    #    else:
-    #        t_route_dest_0 = "COM-BW STN"
-    #else:
-    #    t_route_dest_0 = t_route_dest
-    #return t_route_dest_0
-
     # add more route name formatting to your choice to save dsiplay space
     # If there's a substitution in the dictionary, use it, otherwise return the original
-    return {"TO GRANVILLE": "GRANVILLE", "COMM'L-BDWAY STN": "1"}.get(t_route_dest, t_route_dest)
+    return {"TO GRANVILLE": "GRANVILLE", "COMM'L-BDWAY STN": "COM-BW STN"}.get(t_route_dest, t_route_dest)
 
 
 def ELT_format(ELT):
-    """Unknown."""
+    """time separation, api info gives time and date"""
 
     if d_f.isTimeFormat(ELT):
         t_sch_ELT = datetime.datetime.strptime(
@@ -39,7 +28,7 @@ def ELT_format(ELT):
 
 
 def EC_format(EC):
-    """Unknown."""
+    """api returns time in minutes, to save space we convert them into hours if above of 60"""
 
     if EC < 60:
         EC_time = ' min'
@@ -112,8 +101,6 @@ def get_transit(TRANSLINK_URL, T_STOP, T_API_KEY, T_BUS, T_BUS_TIME, color):
 
             return bus_sch
 
-            #error = True		#Unreachable as we've already return'ed
-
         else:
             # Call function to display HTTP error
             d_f.display_error('HTTP TRANSIT', color)
@@ -125,8 +112,9 @@ def draw_transit_mod(tran_s_x, tran_s_y, bus_stop_data, LOCATION, color, draw):
     draw.text((tran_s_x, tran_s_y-40), LOCATION +
               ' - TRANSLINK', font=d_f.font_size(30), fill=color)
     for x in range(len(bus_stop_data)):
-        for y in (0, 1):
-            if bus_stop_data[x][y] != "":
+        for y in range(len(bus_stop_data[x])):
+            #print("x:" + str(x) + " y: " + str(y))
+            if bus_stop_data[x][y]:
                 draw.text((tran_s_x, tran_s_y), bus_stop_data[x][y],
                           font=d_f.font_size(22), fill=color)
                 # print(bus_stop_data[x][y])

@@ -28,7 +28,7 @@ def url_content(base_url, module_name, header_dict, error_color):
         try:
             # HTTP request
             # print(module_name + ': Attempting to connect to API: ' + base_url)
-            if headers:
+            if header_dict:
                 response_content = requests.get(str(base_url), headers=header_dict)
             else:
                 response_content = requests.get(str(base_url))
@@ -42,12 +42,12 @@ def url_content(base_url, module_name, header_dict, error_color):
             # break
     # Check status of code request
     if response_content.status_code != 200:
-        display_error(module_name + ': Return code not 200, was ' + str(response_content.status_code), error_color)
-        #Should we force content to null if the response code is not 200?
+        display_error(module_name + ': Return code not 200, was ' +
+                      str(response_content.status_code), error_color)
+        # Should we force content to null if the response code is not 200?
         #response_content = None
 
     return response_content
-
 
 
 def choose_mod(mod_choice, mod_turn):
@@ -111,7 +111,7 @@ def sep_strings(it_str, chk_start):
     if chk_str > chk_start:
         chk_str = chk_start
     else:
-        #chk_str = chk_str		#Does no action, not needed.
+        # chk_str = chk_str		#Does no action, not needed.
         check = True
     #print("after" + str(chk_str))
     while check is False:
@@ -120,7 +120,7 @@ def sep_strings(it_str, chk_start):
             # print("space_false: " + str(chk_str))
             check = False
         else:
-            #chk_str = chk_str		#Does no action, not needed.
+            # chk_str = chk_str		#Does no action, not needed.
             # print("space_true: " + str(chk_str))
             check = True
 
@@ -142,13 +142,13 @@ def draw_cal_mod(cal_s_x_0, cal_s_y, draw, color_1, color_2):
     cal_year = datetime.datetime.now().year
     cal_day = datetime.datetime.now().day
     cal_n_m = calendar.month_name[cal_month]
-    cal_text = calendar.TextCalendar(calendar.SUNDAY)
+    cal_text = calendar.TextCalendar(calendar.MONDAY)
     cal_list = cal_text.monthdayscalendar(cal_year, cal_month)
     cal_s_x = cal_s_x_0
 
     draw.text((cal_s_x + 60, cal_s_y-65), str(cal_n_m) + ' ' + str(cal_year),
               font=font_size(35), fill=color_1)
-    draw.text((cal_s_x, cal_s_y-25), 'SU    MO      TU      WED    THU     FRI    SAT',
+    draw.text((cal_s_x, cal_s_y-25), 'MO     TU     WED    THU    FRI    SAT     SU',
               font=font_size(22), fill=color_1)
 
     for cal_x in (0, 1, 2, 3, 4):
@@ -168,13 +168,6 @@ def draw_cal_mod(cal_s_x_0, cal_s_y, draw, color_1, color_2):
 
 def font_size(size):
     """Return a BAHNSCHRIFT font at the requested size."""
-
-    #Following block is equivalent to sole return statement at the end of the function.
-    #fs = ImageFont.truetype(os.path.join(fontdir, 'BAHNSCHRIFT.TTF'), size)
-    ##fs = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), size)
-    #return fs
-
-    #return ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), size)
     return ImageFont.truetype(os.path.join(fontdir, 'BAHNSCHRIFT.TTF'), size)
 
 
@@ -197,21 +190,11 @@ def get_year():
 
 def dayname():
     """Return today's name."""
-
-    #Following are equivalent to the sole return at the end.
-    #day_name = datetime.datetime.now().strftime("%A")
-    #return day_name
-
     return datetime.datetime.now().strftime("%A")
 
 
 def cur_hr():
     """Return 24 hour (0 padded) current hour."""
-
-    #Following are equivalent to sole return command at the end
-    #cur_hr_retval = datetime.datetime.now().strftime("%H")
-    #return cur_hr_retval
-
     return datetime.datetime.now().strftime("%H")
 
 
@@ -223,7 +206,6 @@ def isTimeFormat(time_value):
         return True
     except ValueError:
         return False
-
 
 
 def sep_datetime(utc_datetime):
@@ -257,6 +239,7 @@ def write_to_screen(image, sleep_seconds):
     epd.display(epd.getbuffer(h_image))
     # Sleep
     print('Sleeping for ' + str(int(sleep_seconds/60)) + ' min.')
+    epd.sleep()
     time.sleep(sleep_seconds)
 
 # define function for displaying error

@@ -64,7 +64,7 @@ def get_meet_mod(cred_file, creddir):
     cal_var = ''
 
     if not events:
-        g_cal.append('No upcoming events found.')
+        g_cal.append('No upcoming events found.', "", "", "")
     for event in events:
         start_date, start_time = d_f.sep_datetime(
             event['start'].get('dateTime', event['start'].get('date')))
@@ -74,10 +74,12 @@ def get_meet_mod(cred_file, creddir):
 
         if str(start_date) == str(end_date):
             cal_var_date = str(start_date)
-            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 26)		# limit of 26 char
+            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(
+                str(event['summary']), 26)		# limit of 26 char
         else:
             cal_var_date = str(start_date) + '-' + str(end_date)
-            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(str(event['summary']), 24)		# limit of 24 char
+            cal_var_item_1, cal_var_item_2 = d_f.sep_strings(
+                str(event['summary']), 24)		# limit of 24 char
 
         cal_var_time = str(start_time)
         cal_var = cal_var_date, cal_var_time,  cal_var_item_1, cal_var_item_2

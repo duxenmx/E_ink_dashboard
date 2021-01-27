@@ -49,7 +49,7 @@ curr_ex = []
 
 
 while True:
-
+    epd.init()
     with open(os.path.join(creddir, 'dash_id.json'), "r") as rdash_id:
         data = json.load(rdash_id)
     # Getting time information to know when its supposed to be active
@@ -144,7 +144,7 @@ while True:
                 #print("news by source")
                 news_1 = d_n.get_news(NEWS_URL, NEWS_API, NEWS_SOURCES, NEWS_COUNTRY, 1, black)
                 news_load = 1
-                print("news charged at " + str(saved_hour))
+                print("news retrieved at " + str(saved_hour))
 
             print('News loaded')
 
@@ -171,7 +171,7 @@ while True:
                 curr_ex, stock_it = d_cs.run_st_cur_info(
                     C_1_URL, C_3_URL, C_4_URL, LOCAL_CUR, CURR_CHECK,  C_1_API, ST_WE_URL, ST_W_URL, ST_API, ST_C, black)
                 cs_load = 1
-                print("C-S charged at " + str(saved_hour))
+                print("C-S retrieved at " + str(saved_hour))
 
             print('C-S loaded')
 
@@ -194,7 +194,7 @@ while True:
             mod_tl_s_y = 265
             d_gm.run_meeting_mod(meet_creds, creddir, mod_tl_s_x, mod_tl_s_y, draw, black)
             print('Meetings loaded')
-            draw.rectangle((250, 260, 430, 285), fill=black)
+            draw.rectangle((250, 260, 430, 290), fill=black)
             draw.text((255, 260), 'UPDATED: ' + str(current_time),
                       font=d_f.font_size(20), fill=white)
         elif mod_3_turn == 2:
@@ -226,9 +226,11 @@ while True:
         if check_awake == 0:
             check_awake = 1
             epd.Clear()
+            epd.sleep()
             print('Sleeping for ' + str(refresh_sec) + ' min.')
-            time.sleep(refresh_sec)
+            time.sleep(refresh_sec*60)
         else:
             # use this else to prevent constant screen refreshing once its sleeping, it will just keep sleeping for 5 more minutes, like me every morning....
             print('Sleeping for ' + str(refresh_sec) + ' min.')
-            time.sleep(refresh_sec)
+            epd.sleep()
+            time.sleep(refresh_sec*60)
