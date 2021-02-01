@@ -62,9 +62,9 @@ def choose_mod(mod_choice, mod_turn):
     elif mod_choice == "off":
         mod_turn = 3
     elif mod_choice == "random":
-        mod_rand = random.randint(0, 1, 2)
+        mod_rand = random.randint(0, 1)
         while mod_rand == mod_turn:
-            mod_rand = random.randint(0, 1, 2)
+            mod_rand = random.randint(0, 1)
         if mod_turn != mod_rand:
             mod_turn = mod_rand
     else:
