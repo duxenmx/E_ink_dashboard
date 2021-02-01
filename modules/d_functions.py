@@ -45,7 +45,7 @@ def url_content(base_url, module_name, header_dict, error_color):
         display_error(module_name + ': Return code not 200, was ' +
                       str(response_content.status_code), error_color)
         # Should we force content to null if the response code is not 200?
-        #response_content = None
+        # response_content = None
 
     return response_content
 
@@ -57,12 +57,14 @@ def choose_mod(mod_choice, mod_turn):
         mod_turn = 0
     elif mod_choice in ("c-s", "news", "meetings"):
         mod_turn = 1
-    elif mod_choice == "off":
+    elif mod_choice in ("spotify"):
         mod_turn = 2
+    elif mod_choice == "off":
+        mod_turn = 3
     elif mod_choice == "random":
-        mod_rand = random.randint(0, 1)
+        mod_rand = random.randint(0, 1, 2)
         while mod_rand == mod_turn:
-            mod_rand = random.randint(0, 1)
+            mod_rand = random.randint(0, 1, 2)
         if mod_turn != mod_rand:
             mod_turn = mod_rand
     else:
@@ -107,13 +109,13 @@ def sep_strings(it_str, chk_start):
     chk_str = int(len(str(it_str)))
     chk_str_1 = chk_str
     check = False
-    #print("before" + str(chk_str))
+    # print("before" + str(chk_str))
     if chk_str > chk_start:
         chk_str = chk_start
     else:
         # chk_str = chk_str		#Does no action, not needed.
         check = True
-    #print("after" + str(chk_str))
+    # print("after" + str(chk_str))
     while check is False:
         if str(it_str)[chk_str] != " ":
             chk_str = chk_str - 1
@@ -151,9 +153,10 @@ def draw_cal_mod(cal_s_x_0, cal_s_y, draw, color_1, color_2):
     draw.text((cal_s_x, cal_s_y-25), 'MO     TU     WED    THU    FRI    SAT     SU',
               font=font_size(22), fill=color_1)
 
-    for cal_x in (0, 1, 2, 3, 4):
+    for cal_x in range(len(cal_list)):
         for cal_y in (0, 1, 2, 3, 4, 5, 6):
             if cal_list[cal_x][cal_y] != 0:
+
                 if cal_list[cal_x][cal_y] == cal_day:
                     draw.rectangle((cal_s_x-5, cal_s_y, cal_s_x+22, cal_s_y+28), fill=color_1)
                     draw.text((cal_s_x, cal_s_y), str(
