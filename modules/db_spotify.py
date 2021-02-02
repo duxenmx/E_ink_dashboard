@@ -24,7 +24,7 @@ def get_spot_info():
 
     with spotify.token_as(token):
         p = spotify.playback()
-    x_limit = 24
+    x_limit = 20
 
     sp_data = []
     if p is not None:
