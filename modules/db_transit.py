@@ -58,6 +58,7 @@ def get_transit(TRANSLINK_URL, T_STOP, T_API_KEY, T_BUS, T_BUS_TIME, color):
         except:
             # Call function to display connection error
             print('Connection error.')
+            response_t = ''
             d_f.display_error('TRANSIT CONNECTION', color)
     error = None
     while error is None:
@@ -103,6 +104,7 @@ def get_transit(TRANSLINK_URL, T_STOP, T_API_KEY, T_BUS, T_BUS_TIME, color):
 
         else:
             # Call function to display HTTP error
+            response_t = ''
             d_f.display_error('HTTP TRANSIT', color)
 
 

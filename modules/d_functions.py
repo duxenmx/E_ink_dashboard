@@ -233,13 +233,14 @@ def write_to_screen(image, sleep_seconds):
     """Write an image to the screen and sleep for requested seconds."""
 
     print('Writing to screen.')
+    # dont remove this commented area yet
     # Write to screen
-    h_image = Image.new('1', (epd.width, epd.height), 255)
+    #h_image = Image.new('1', (epd.width, epd.height), 255)
     # Open the template
-    screen_output_file = Image.open(os.path.join(picdir, image))
+    #screen_output_file = Image.open(os.path.join(picdir, image))
     # Initialize the drawing context with template as background
-    h_image.paste(screen_output_file, (0, 0))
-    epd.display(epd.getbuffer(h_image))
+    #h_image.paste(screen_output_file, (0, 0))
+    epd.display(epd.getbuffer(image))
     # Sleep
     print('Sleeping for ' + str(int(sleep_seconds/60)) + ' min.')
     epd.sleep()
