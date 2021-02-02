@@ -16,6 +16,7 @@ from modules import db_weather as d_w
 from modules import db_news as d_n
 from modules import db_curr_stock as d_cs
 from modules import db_geolocation as d_geo
+from modules import db_spotify as d_spot
 
 
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
@@ -29,8 +30,8 @@ white = 'rgb(255,255,255)'
 
 # Initialize and clear screen
 print('Initializing and clearing screen.')
-epd.init()
-epd.Clear()
+# epd.init()
+# epd.Clear()
 
 geo_data = []
 check_awake = 0
@@ -66,7 +67,7 @@ while True:
         current_time = datetime.now().strftime('%I:%M%p')
         current_hour = int(datetime.now().strftime('%H'))
         # Open template file
-        template = Image.open(os.path.join(picdir, 'template.png'))
+        template = Image.open(os.path.join(picdir, 'template.bmp'))
         # Initialize the drawing context with template as background
         draw = ImageDraw.Draw(template)
 
@@ -133,6 +134,7 @@ while True:
 
             d_t.run_transit_mod(TRANSLINK_URL, t_stop_no, T_API_KEY, T_BUS,
                                 T_BUS_TIME,  LOCATION,  mod_t_s_x, mod_t_s_y, draw, black)
+
         elif mod_1_turn == 1:
             # news calls
             mod_t_s_x = 10
@@ -152,7 +154,21 @@ while True:
                 d_n.draw_news_mod(mod_t_s_x, mod_t_s_y, news_0, black, draw)
             elif (d_f.tir_min(int(current_hour), 15, 30, 59) or d_f.tir_min(int(current_hour), 45, 59, 59)) and news_load == 1:
                 d_n.draw_news_mod(mod_t_s_x, mod_t_s_y, news_1, black, draw)
+
         elif mod_1_turn == 2:
+            mod_t_s_x = 8
+            mod_t_s_y = 50
+
+            print('Spotify loaded')
+
+            spoti_data = d_spot.get_spot_info()
+            d_spot.draw_music_mod(mod_t_s_x, mod_t_s_y, spoti_data, black, draw, template)
+            if spoti_data[0] == 'track':
+                refresh_sec = float(spoti_data[1])/60
+            elif spoti_data[0] == 'ad':
+                refresh_sec = 10/60
+
+        elif mod_1_turn == 3:
             print("Module 1 is off")
 
         # Weather or currency-stock
@@ -177,7 +193,7 @@ while True:
 
             if d_f.tir_min(int(current_hour), 0, 59, 59) and cs_load == 1:
                 d_cs.draw_cs_mod(mod_w_s_x, mod_w_s_y, draw, curr_ex, stock_it, LOCAL_CUR, black)
-        elif mod_2_turn == 2:
+        elif mod_2_turn == 3:
             print("Module 2 is off")
 
         # populate Tasklist or meetings
@@ -197,7 +213,7 @@ while True:
             draw.rectangle((250, 260, 430, 290), fill=black)
             draw.text((255, 260), 'UPDATED: ' + str(current_time),
                       font=d_f.font_size(20), fill=white)
-        elif mod_3_turn == 2:
+        elif mod_3_turn == 3:
             print("Module 3 is off")
 
         # Populate the calendar module
@@ -209,16 +225,17 @@ while True:
         draw.line((430, 0, 430, 500), fill=0, width=2)
         draw.line((0, 260, 900, 260), fill=0, width=2)
 
-        # Draw bottom left box
-
+        # do not remove this commented area, testing how it works without saving everything
+        # in an image at the end,
         # Save the image for display as PNG
-        screen_output_file = os.path.join(picdir, 'screen_output.png')
-        template.save(screen_output_file)
+        #screen_output_file = os.path.join(picdir, 'screen_output.bmp')
+        # template.save(screen_output_file)
         # Close the template file
-        template.close()
+    #    template.close()
 
         # Write to screen next in 300 seconds
-        d_f.write_to_screen(screen_output_file, int(refresh_sec*60))
+        #d_f.write_to_screen(screen_output_file, int(refresh_sec*60))
+        d_f.write_to_screen(template, int(refresh_sec*60))
 
     # if the device is in sleeping hours it will clean the screen to prevent burn out of the screen
     else:
