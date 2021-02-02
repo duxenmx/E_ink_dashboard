@@ -47,7 +47,7 @@ class Dashform(FlaskForm):
     waking_time = SelectField("Time ON (24H): ", choices=[(h, h)for h in range(0, 24)])
     sleeping_time = SelectField("Time OFF (24H): ", choices=[(h, h)for h in range(0, 24)])
     mod_1_choice = SelectField("Module 1: ", choices=[(
-        'transit', 'Transit'), ('news', 'News'), ('random', 'Random'), ('off', 'OFF')])
+        'transit', 'Transit'), ('news', 'News'), ('spotify', 'Spotify'), ('random', 'Random'), ('off', 'OFF')])
     mod_2_choice = SelectField("Module 2: ", choices=[(
         'weather', 'Weather'), ('c-s', 'Currency/Stock'), ('random', 'Random'), ('off', 'OFF')])
     mod_3_choice = SelectField("Module 3: ", choices=[(
