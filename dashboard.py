@@ -30,8 +30,8 @@ white = 'rgb(255,255,255)'
 
 # Initialize and clear screen
 print('Initializing and clearing screen.')
-# epd.init()
-# epd.Clear()
+epd.init()
+epd.Clear()
 
 geo_data = []
 check_awake = 0
@@ -163,10 +163,10 @@ while True:
 
             spoti_data = d_spot.get_spot_info()
             d_spot.draw_music_mod(mod_t_s_x, mod_t_s_y, spoti_data, black, draw, template)
-            if spoti_data[0] == 'track':
-                refresh_sec = float(spoti_data[1])/60
-            elif spoti_data[0] == 'ad':
-                refresh_sec = 10/60
+            # if spoti_data[0] == 'track':
+            #    refresh_sec = float(spoti_data[1])/60
+            # elif spoti_data[0] == 'ad':
+            #    refresh_sec = 10/60
 
         elif mod_1_turn == 3:
             print("Module 1 is off")
