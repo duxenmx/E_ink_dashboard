@@ -116,6 +116,6 @@ def draw_music_mod(tran_s_x, tran_s_y, spoti, color, draw, template):
         im_grey = c_img.convert('L')
         template.paste(im_grey.resize((180, 180), resample=3), (245, 75))
     elif spoti[0] == 'off':
-        for x in range(2, len(spoti)):
+        for x in range(1, len(spoti)):
             draw.text((tran_s_x, tran_s_y), spoti[x], font=d_f.font_size(26), fill=color)
             tran_s_y = tran_s_y + 20
