@@ -118,4 +118,4 @@ def draw_music_mod(tran_s_x, tran_s_y, spoti, color, draw, template):
     elif spoti[0] == 'off':
         for x in range(1, len(spoti)):
             draw.text((tran_s_x, tran_s_y), spoti[x], font=d_f.font_size(26), fill=color)
-            tran_s_y = tran_s_y + 20
+            tran_s_y = tran_s_y + 28
