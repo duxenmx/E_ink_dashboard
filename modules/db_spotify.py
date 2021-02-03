@@ -25,6 +25,7 @@ def get_spot_info():
     with spotify.token_as(token):
         p = spotify.playback()
     x_limit = 20
+    not_playing = False
 
     sp_data = []
     if p is not None:
@@ -63,7 +64,7 @@ def get_spot_info():
                     album_3 = ' '
                     album_4 = ' '
                 year = p.item.album.release_date[0:4]
-                url = p.item.album.images[1].url
+                url = p.item.album.images[0].url
                 img_data = requests.get(url).content
                 duration = (p.item.duration_ms/1000)-(p.progress_ms/1000)
 
@@ -84,22 +85,24 @@ def get_spot_info():
                 sp_data.append(album_4)
                 sp_data.append('Year: [' + year + ']')
                 sp_data.append('Duration = ' + str(sec_format) + ' min')
+                not_playing = False
 
-            elif p.currently_playing_type == 'ad':
-                sp_data.append(str(p.currently_playing_type))
-                sp_data.append('Playing Ads')
+            else:
+                not_playing = True
 
         else:
-            sp_data.append('off')
-            sp_data.append('Currently not playing')
+            not_playing = True
 
     else:
+        not_playing = True
+
+    if not_playing is True:
         sp_data.append('off')
         sp_data.append('Currently not playing')
+        sp_data.append('or playing Ads,')
+        sp_data.append('wait until it refreshes')
 
     return sp_data
-    # print(sp_data)
-    # time.sleep(10)
 
 
 def draw_music_mod(tran_s_x, tran_s_y, spoti, color, draw, template):
@@ -111,8 +114,8 @@ def draw_music_mod(tran_s_x, tran_s_y, spoti, color, draw, template):
                 tran_s_y = tran_s_y + 20
         c_img = Image.open(cover_path)
         im_grey = c_img.convert('L')
-        template.paste(im_grey.resize((180, 180)), (245, 75))
-    elif spoti[0] == 'ad':
-        draw.text((tran_s_x, tran_s_y), spoti[1], font=d_f.font_size(26), fill=color)
+        template.paste(im_grey.resize((180, 180), resample=3), (245, 75))
     elif spoti[0] == 'off':
-        draw.text((tran_s_x, tran_s_y), spoti[1], font=d_f.font_size(26), fill=color)
+        for x in range(2, len(spoti)):
+            draw.text((tran_s_x, tran_s_y), spoti[x], font=d_f.font_size(26), fill=color)
+            tran_s_y = tran_s_y + 20

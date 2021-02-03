@@ -47,8 +47,8 @@ def get_weather(WEATHER_URL, LATITUDE, LONGITUDE, UNITS, W_API_KEY, color):
         # weather_data.append('Feels Like: ' + str(feels_like))
         # weather_data.append('Humidity: ' + str(humidity))
         # weather_data.append('Wind Speed: '+str(wind))
-        if str(report.title()) == 'heavy intensity rain':
-            weather_data.append('heavy rain')
+        if str(report.title()) == 'Heavy Intensity Rain':
+            weather_data.append('Heavy Rain')
         else:
             weather_data.append(str(report.title()))
         weather_data.append(str(format(temp_max, '.0f')) +
@@ -76,8 +76,8 @@ def draw_weather_mod(w_s_x, w_s_y, w_info, color, picdir, template, draw):
     icondir = os.path.join(picdir, 'icon')
     draw.text((w_s_x, w_s_y), w_info[0], font=d_f.font_size(28), fill=color)
     draw.text((w_s_x + 70, w_s_y + 45), w_info[1], font=d_f.font_size(45), fill=color)
-    draw.text((w_s_x + 170, w_s_y + 45), w_info[3], font=d_f.font_size(22), fill=color)
-    draw.text((w_s_x + 170, w_s_y + 70), w_info[2], font=d_f.font_size(22), fill=color)
+    draw.text((w_s_x + 160, w_s_y + 45), w_info[3], font=d_f.font_size(22), fill=color)
+    draw.text((w_s_x + 160, w_s_y + 70), w_info[2], font=d_f.font_size(22), fill=color)
     draw.text((w_s_x + 75, w_s_y + 110), w_info[10], font=d_f.font_size(22), fill=color)
     draw.text((w_s_x + 75, w_s_y + 135), w_info[11] +
               ' ' + w_info[13], font=d_f.font_size(22), fill=color)
